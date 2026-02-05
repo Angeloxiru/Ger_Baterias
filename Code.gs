@@ -239,7 +239,11 @@ function validarCodigo(codigo, tipo) {
       var equipData = abas.equipamentos.getDataRange().getValues();
       for (var i = 1; i < equipData.length; i++) {
         if (equipData[i][0] === codigo) {
-          return { valido: true };
+          return {
+            valido: true,
+            bateriaAtual: equipData[i][1] !== undefined ? equipData[i][1] : '',
+            ultimoHorimetro: equipData[i][3] !== undefined ? equipData[i][3] : ''
+          };
         }
       }
       return { valido: false, erro: 'Empilhadeira não cadastrada' };
@@ -275,6 +279,31 @@ function registrarTroca(dados) {
   try {
     var abas = getAbas();
     var agora = new Date();
+
+    // Validação server-side: horimetro dentro dos limites
+    var equipValidData = abas.equipamentos.getDataRange().getValues();
+    for (var i = 1; i < equipValidData.length; i++) {
+      if (equipValidData[i][0] === dados.empilhadeira) {
+        if (equipValidData[i][3] !== '' && equipValidData[i][3] !== undefined) {
+          var ultimoHor = parseFloat(equipValidData[i][3]);
+          if (parseFloat(dados.horimetro) <= ultimoHor) {
+            return { sucesso: false, mensagem: 'Horimetro deve ser maior que ' + ultimoHor + 'h' };
+          }
+          if (parseFloat(dados.horimetro) > ultimoHor + 20) {
+            return { sucesso: false, mensagem: 'Diferença máxima é 20h (último: ' + ultimoHor + 'h)' };
+          }
+        }
+        break;
+      }
+    }
+
+    // Validação server-side: bateria não está Em Uso
+    var batValidData = abas.baterias.getDataRange().getValues();
+    for (var i = 1; i < batValidData.length; i++) {
+      if (batValidData[i][0] === dados.bateriaNova && batValidData[i][1] === 'Em Uso') {
+        return { sucesso: false, mensagem: 'Bateria ' + dados.bateriaNova + ' já em uso em ' + batValidData[i][2] };
+      }
+    }
 
     // 1. Buscar bateria que estava na empilhadeira
     var bateriaAnterior = buscarBateriaEmpilhadeira(dados.empilhadeira);

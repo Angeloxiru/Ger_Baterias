@@ -121,14 +121,6 @@
     margin-bottom: 25px;
   }
   
-  .qr-input-group label {
-    display: block;
-    font-weight: 600;
-    color: #555;
-    margin-bottom: 10px;
-    font-size: 1.1rem;
-  }
-  
   .qr-input {
     width: 100%;
     padding: 20px 22px;
@@ -171,14 +163,6 @@
   
   /* ==================== NÍVEL DE ÁGUA ==================== */
   
-  .nivel-agua-container label {
-    display: block;
-    font-weight: 600;
-    color: #555;
-    margin-bottom: 20px;
-    font-size: 1.1rem;
-  }
-  
   .nivel-opcoes {
     display: flex;
     flex-direction: column;
@@ -209,14 +193,8 @@
   .nivel-text {
     font-size: 1.4rem;
     font-weight: bold;
-    margin-bottom: 8px;
   }
-  
-  .nivel-desc {
-    font-size: 1rem;
-    color: #666;
-  }
-  
+
   /* Cores específicas para cada nível */
   .nivel-ok {
     border-color: #00C851;
@@ -230,10 +208,6 @@
   .nivel-ok.selecionado .nivel-icon,
   .nivel-ok.selecionado .nivel-text {
     color: white;
-  }
-
-  .nivel-ok.selecionado .nivel-desc {
-    color: rgba(255,255,255,0.9);
   }
 
   .nivel-atencao {
@@ -250,10 +224,6 @@
     color: white;
   }
 
-  .nivel-atencao.selecionado .nivel-desc {
-    color: rgba(255,255,255,0.9);
-  }
-
   .nivel-critico {
     border-color: #ff4444;
   }
@@ -268,10 +238,6 @@
     color: white;
   }
 
-  .nivel-critico.selecionado .nivel-desc {
-    color: rgba(255,255,255,0.9);
-  }
-  
   /* ==================== RESUMO ==================== */
   
   .resumo-container {
@@ -343,6 +309,170 @@
   .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+  
+  /* ==================== RODAPÉ ==================== */
+  
+  .footer {
+    text-align: center;
+    color: white;
+    margin-top: 25px;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .link-painel {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    touch-action: manipulation;
+  }
+
+  .link-painel:active {
+    background: rgba(255,255,255,0.35);
+  }
+  
+  /* ==================== ANIMAÇÕES ==================== */
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideInDown {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  
+  /* ==================== RESPONSIVIDADE (MC2200 portrait: 480px) ==================== */
+
+  @media (max-width: 480px) {
+    body {
+      padding: 8px;
+    }
+
+    .header {
+      margin-bottom: 16px;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      margin-bottom: 4px;
+    }
+
+    .card {
+      padding: 18px 15px;
+      border-radius: 12px;
+    }
+
+    .step-header {
+      gap: 12px;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+    }
+
+    .step-number {
+      width: 36px;
+      height: 36px;
+      font-size: 1.1rem;
+    }
+
+    .step-header h2 {
+      font-size: 1.3rem;
+    }
+
+    .qr-input-group {
+      margin-bottom: 16px;
+    }
+
+    .qr-input {
+      font-size: 1.4rem;
+      padding: 14px;
+    }
+
+    .info-display {
+      padding: 10px 12px;
+      font-size: 1rem;
+    }
+
+    .nivel-opcoes {
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .nivel-btn {
+      padding: 14px;
+    }
+
+    .nivel-icon {
+      font-size: 2rem;
+      margin-bottom: 4px;
+    }
+
+    .nivel-text {
+      font-size: 1.25rem;
+    }
+
+    .resumo-container {
+      padding: 14px;
+      margin-bottom: 18px;
+    }
+
+    .resumo-item {
+      padding: 10px 0;
+    }
+
+    .resumo-valor {
+      font-size: 1.15rem;
+    }
+
+    .btn {
+      padding: 13px 20px;
+      font-size: 1rem;
+      margin-top: 8px;
+    }
+
+    .footer {
+      margin-top: 16px;
+    }
+
+    .link-painel {
+      padding: 10px 20px;
+      font-size: 0.95rem;
+    }
   }
   
   /* ==================== LOADER ==================== */
