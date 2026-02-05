@@ -84,7 +84,8 @@ function criarAbaRegistros(ss) {
     'Bateria Instalada',
     'Bateria Removida',
     'Nível Água',
-    'Duração Uso Anterior (horas)'
+    'Duração Uso Anterior (horas)',
+    'Horimetro'
   ];
   
   sheet.getRange(1, 1, 1, cabecalhos.length).setValues([cabecalhos]);
@@ -109,27 +110,28 @@ function criarAbaBaterias(ss) {
     'Tempo Decorrido (h)',
     'Último Nível Água',
     'Total de Usos',
-    'Média Duração (h)'
+    'Média Duração (h)',
+    'Horimetro Instalação'
   ];
-  
+
   sheet.getRange(1, 1, 1, cabecalhos.length).setValues([cabecalhos]);
   sheet.getRange(1, 1, 1, cabecalhos.length).setFontWeight('bold').setBackground('#4285f4').setFontColor('#ffffff');
   sheet.setFrozenRows(1);
-  
+
   // Inserir baterias exemplo
   var bateriasExemplo = [
-    ['BAT01', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0],
-    ['BAT02', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0],
-    ['BAT03', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0],
-    ['BAT04', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0],
-    ['BAT05', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0],
-    ['BAT06', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0],
-    ['BAT07', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0],
-    ['BAT08', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0],
-    ['BAT09', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0],
-    ['BAT10', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0],
-    ['BAT11', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0],
-    ['BAT12', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0]
+    ['BAT01', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0, ''],
+    ['BAT02', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0, ''],
+    ['BAT03', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0, ''],
+    ['BAT04', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0, ''],
+    ['BAT05', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0, ''],
+    ['BAT06', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0, ''],
+    ['BAT07', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0, ''],
+    ['BAT08', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0, ''],
+    ['BAT09', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0, ''],
+    ['BAT10', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0, ''],
+    ['BAT11', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0, ''],
+    ['BAT12', 'Em Carga', 'Carregador', new Date(), 0, 'OK', 0, 0, '']
   ];
   
   sheet.getRange(2, 1, bateriasExemplo.length, bateriasExemplo[0].length).setValues(bateriasExemplo);
@@ -173,16 +175,16 @@ function criarAbaEquipamentos(ss) {
   }
   
   var dados = [
-    ['Código Empilhadeira', 'Bateria Atual', 'Última Troca'],
-    ['N01', '', ''],
-    ['N02', '', ''],
-    ['N03', '', ''],
-    ['N04', '', ''],
-    ['N05', '', '']
+    ['Código Empilhadeira', 'Bateria Atual', 'Última Troca', 'Último Horimetro'],
+    ['N01', '', '', ''],
+    ['N02', '', '', ''],
+    ['N03', '', '', ''],
+    ['N04', '', '', ''],
+    ['N05', '', '', '']
   ];
-  
-  sheet.getRange(1, 1, dados.length, 3).setValues(dados);
-  sheet.getRange(1, 1, 1, 3).setFontWeight('bold').setBackground('#4285f4').setFontColor('#ffffff');
+
+  sheet.getRange(1, 1, dados.length, 4).setValues(dados);
+  sheet.getRange(1, 1, 1, 4).setFontWeight('bold').setBackground('#4285f4').setFontColor('#ffffff');
   sheet.setFrozenRows(1);
 }
 
@@ -273,20 +275,21 @@ function registrarTroca(dados) {
   try {
     var abas = getAbas();
     var agora = new Date();
-    
+
     // 1. Buscar bateria que estava na empilhadeira
     var bateriaAnterior = buscarBateriaEmpilhadeira(dados.empilhadeira);
-    
-    // 2. Calcular duração de uso da bateria anterior
+
+    // 2. Calcular duração pelo horimetro (horas de máquina reais)
     var duracaoUso = 0;
-    if (bateriaAnterior.codigo) {
-      duracaoUso = calcularDuracao(bateriaAnterior.inicioUso, agora);
+    if (bateriaAnterior.codigo && bateriaAnterior.horimetroInstalacao !== '') {
+      duracaoUso = dados.horimetro - bateriaAnterior.horimetroInstalacao;
+      if (duracaoUso < 0) duracaoUso = 0;
     }
-    
+
     // 3. Gerar ID único para o registro
     var ultimaLinha = abas.registros.getLastRow();
     var novoID = ultimaLinha > 1 ? ultimaLinha : 1;
-    
+
     // 4. Inserir registro na aba Registros
     var novaLinha = [
       novoID,
@@ -296,34 +299,35 @@ function registrarTroca(dados) {
       dados.bateriaNova,
       bateriaAnterior.codigo || 'N/A',
       dados.nivelAgua,
-      duracaoUso
+      duracaoUso,
+      dados.horimetro
     ];
-    
+
     abas.registros.appendRow(novaLinha);
-    
+
     // 5. Atualizar status da bateria antiga (vai para carga)
     if (bateriaAnterior.codigo) {
       atualizarStatusBateria(bateriaAnterior.codigo, 'Em Carga', 'Carregador', agora, duracaoUso);
     }
-    
-    // 6. Atualizar status da bateria nova (vai para uso)
-    atualizarStatusBateria(dados.bateriaNova, 'Em Uso', dados.empilhadeira, agora, 0, dados.nivelAgua);
-    
-    // 7. Atualizar registro da empilhadeira
-    atualizarEmpilhadeira(dados.empilhadeira, dados.bateriaNova, agora);
-    
-    return { 
-      sucesso: true, 
+
+    // 6. Atualizar status da bateria nova (vai para uso, salva horimetro de instalação)
+    atualizarStatusBateria(dados.bateriaNova, 'Em Uso', dados.empilhadeira, agora, 0, dados.nivelAgua, dados.horimetro);
+
+    // 7. Atualizar registro da empilhadeira com horimetro atual
+    atualizarEmpilhadeira(dados.empilhadeira, dados.bateriaNova, agora, dados.horimetro);
+
+    return {
+      sucesso: true,
       mensagem: 'Troca registrada com sucesso!',
       id: novoID,
       duracaoAnterior: duracaoUso.toFixed(2)
     };
-    
+
   } catch (error) {
     Logger.log('Erro ao registrar troca: ' + error.toString());
-    return { 
-      sucesso: false, 
-      mensagem: 'Erro ao registrar: ' + error.toString() 
+    return {
+      sucesso: false,
+      mensagem: 'Erro ao registrar: ' + error.toString()
     };
   }
 }
@@ -334,48 +338,56 @@ function registrarTroca(dados) {
 function buscarBateriaEmpilhadeira(codigoEmpilhadeira) {
   var abas = getAbas();
   var bateriasData = abas.baterias.getDataRange().getValues();
-  
+
   for (var i = 1; i < bateriasData.length; i++) {
     if (bateriasData[i][2] === codigoEmpilhadeira && bateriasData[i][1] === 'Em Uso') {
       return {
         codigo: bateriasData[i][0],
-        inicioUso: bateriasData[i][3]
+        inicioUso: bateriasData[i][3],
+        horimetroInstalacao: bateriasData[i][8] !== undefined ? bateriasData[i][8] : ''
       };
     }
   }
-  
-  return { codigo: null, inicioUso: null };
+
+  return { codigo: null, inicioUso: null, horimetroInstalacao: '' };
 }
 
 /**
  * Atualiza o status de uma bateria específica
  */
-function atualizarStatusBateria(codigoBateria, status, localizacao, inicioStatus, duracao, nivelAgua) {
+function atualizarStatusBateria(codigoBateria, status, localizacao, inicioStatus, duracao, nivelAgua, horimetro) {
   var abas = getAbas();
   var bateriasData = abas.baterias.getDataRange().getValues();
-  
+
   for (var i = 1; i < bateriasData.length; i++) {
     if (bateriasData[i][0] === codigoBateria) {
       var totalUsos = bateriasData[i][6] || 0;
       var mediaDuracao = bateriasData[i][7] || 0;
-      
-      // Se acabou de usar, atualiza estatísticas
+
+      // Se acabou de usar, atualiza estatísticas com duração por horimetro
       if (status === 'Em Carga' && duracao > 0) {
         totalUsos++;
         mediaDuracao = ((mediaDuracao * (totalUsos - 1)) + duracao) / totalUsos;
       }
-      
+
       // Atualizar linha
       abas.baterias.getRange(i + 1, 2).setValue(status);
       abas.baterias.getRange(i + 1, 3).setValue(localizacao);
       abas.baterias.getRange(i + 1, 4).setValue(inicioStatus);
-      abas.baterias.getRange(i + 1, 5).setValue(0); // Tempo decorrido zerado
+      abas.baterias.getRange(i + 1, 5).setValue(0);
       if (nivelAgua) {
         abas.baterias.getRange(i + 1, 6).setValue(nivelAgua);
       }
       abas.baterias.getRange(i + 1, 7).setValue(totalUsos);
       abas.baterias.getRange(i + 1, 8).setValue(mediaDuracao);
-      
+
+      // Coluna 9: Horimetro Instalação — salva quando vai para uso, limpa quando vai para carga
+      if (status === 'Em Uso' && horimetro !== undefined) {
+        abas.baterias.getRange(i + 1, 9).setValue(horimetro);
+      } else {
+        abas.baterias.getRange(i + 1, 9).setValue('');
+      }
+
       break;
     }
   }
@@ -384,14 +396,15 @@ function atualizarStatusBateria(codigoBateria, status, localizacao, inicioStatus
 /**
  * Atualiza o registro da empilhadeira
  */
-function atualizarEmpilhadeira(codigoEmpilhadeira, codigoBateria, dataHora) {
+function atualizarEmpilhadeira(codigoEmpilhadeira, codigoBateria, dataHora, horimetro) {
   var abas = getAbas();
   var equipData = abas.equipamentos.getDataRange().getValues();
-  
+
   for (var i = 1; i < equipData.length; i++) {
     if (equipData[i][0] === codigoEmpilhadeira) {
       abas.equipamentos.getRange(i + 1, 2).setValue(codigoBateria);
       abas.equipamentos.getRange(i + 1, 3).setValue(dataHora);
+      abas.equipamentos.getRange(i + 1, 4).setValue(horimetro);
       break;
     }
   }
@@ -431,7 +444,8 @@ function obterDadosPainel() {
         tempoDecorrido: tempoDecorrido.toFixed(2),
         nivelAgua: bateriasData[i][5],
         totalUsos: bateriasData[i][6],
-        mediaDuracao: bateriasData[i][7] ? bateriasData[i][7].toFixed(2) : '0.00'
+        mediaDuracao: bateriasData[i][7] ? bateriasData[i][7].toFixed(2) : '0.00',
+        horimetroInstalacao: bateriasData[i][8] !== undefined ? bateriasData[i][8] : ''
       });
     }
     
@@ -483,7 +497,8 @@ function obterHistoricoBateria(codigoBateria) {
           bateriaInstalada: registrosData[i][4],
           bateriaRemovida: registrosData[i][5],
           nivelAgua: registrosData[i][6],
-          duracaoUso: registrosData[i][7] ? registrosData[i][7].toFixed(2) : 'N/A'
+          duracaoUso: registrosData[i][7] ? registrosData[i][7].toFixed(2) : 'N/A',
+          horimetro: registrosData[i][8] !== undefined && registrosData[i][8] !== '' ? registrosData[i][8] : 'N/A'
         });
       }
     }

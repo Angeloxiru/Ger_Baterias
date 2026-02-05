@@ -5,6 +5,7 @@
     funcionario: null,
     funcionarioNome: null,
     empilhadeira: null,
+    horimetro: null,
     bateriaNova: null,
     nivelAgua: null
   };
@@ -134,49 +135,77 @@
   }
   
   /**
-   * Valida o Passo 3: Bateria
+   * Valida o Passo 3: Horimetro
    */
   function validarPasso3() {
+    const valor = document.getElementById('horimetro').value.trim();
+
+    if (!valor) {
+      mostrarMensagem('Digite a leitura do horimetro', 'erro');
+      return;
+    }
+
+    const numero = parseFloat(valor);
+    if (isNaN(numero) || numero < 0) {
+      mostrarMensagem('Horimetro deve ser um número válido (≥ 0)', 'erro');
+      return;
+    }
+
+    dadosRegistro.horimetro = numero;
+
+    document.getElementById('horimetroInfo').innerHTML =
+      '✓ Horimetro registrado: ' + numero + 'h';
+    document.getElementById('horimetroInfo').className = 'info-display valido';
+
+    setTimeout(() => {
+      mostrarPasso(4);
+    }, 400);
+  }
+
+  /**
+   * Valida o Passo 4: Bateria
+   */
+  function validarPasso4() {
     const codigo = document.getElementById('bateria').value.trim().toUpperCase();
-    
+
     if (!codigo) {
       mostrarMensagem('Digite o código da bateria', 'erro');
       return;
     }
-    
+
     mostrarLoader('bateriaInfo');
-    
+
     google.script.run
       .withSuccessHandler(function(resultado) {
         esconderLoader('bateriaInfo');
-        
+
         if (resultado.valido) {
           // Verificar se bateria está disponível
           if (resultado.status === 'Em Uso') {
-            document.getElementById('bateriaInfo').innerHTML = 
+            document.getElementById('bateriaInfo').innerHTML =
               '⚠ Esta bateria já está em uso em: ' + resultado.localizacao;
             document.getElementById('bateriaInfo').className = 'info-display erro';
             mostrarMensagem('Bateria já está em uso!', 'aviso');
             return;
           }
-          
+
           dadosRegistro.bateriaNova = codigo;
-          
-          let statusTexto = resultado.status === 'Em Carga' ? 
-            'Carregando (' + resultado.localizacao + ')' : 
+
+          let statusTexto = resultado.status === 'Em Carga' ?
+            'Carregando (' + resultado.localizacao + ')' :
             'Disponível';
-          
-          document.getElementById('bateriaInfo').innerHTML = 
+
+          document.getElementById('bateriaInfo').innerHTML =
             '✓ Bateria ' + codigo + ' - ' + statusTexto;
           document.getElementById('bateriaInfo').className = 'info-display valido';
-          
+
           // Avançar para próximo passo
           setTimeout(() => {
-            mostrarPasso(4);
+            mostrarPasso(5);
           }, 500);
-          
+
         } else {
-          document.getElementById('bateriaInfo').innerHTML = 
+          document.getElementById('bateriaInfo').innerHTML =
             '✕ ' + resultado.erro;
           document.getElementById('bateriaInfo').className = 'info-display erro';
           mostrarMensagem(resultado.erro, 'erro');
@@ -206,7 +235,7 @@
     // Avançar para resumo após pequeno delay
     setTimeout(() => {
       mostrarResumo();
-      mostrarPasso(5);
+      mostrarPasso(6);
     }, 400);
   }
   
@@ -214,16 +243,19 @@
    * Mostra o resumo final
    */
   function mostrarResumo() {
-    document.getElementById('resumoFuncionario').textContent = 
+    document.getElementById('resumoFuncionario').textContent =
       dadosRegistro.funcionario + ' - ' + dadosRegistro.funcionarioNome;
-    
-    document.getElementById('resumoEmpilhadeira').textContent = 
+
+    document.getElementById('resumoEmpilhadeira').textContent =
       dadosRegistro.empilhadeira;
-    
-    document.getElementById('resumoBateria').textContent = 
+
+    document.getElementById('resumoHorimetro').textContent =
+      dadosRegistro.horimetro + 'h';
+
+    document.getElementById('resumoBateria').textContent =
       dadosRegistro.bateriaNova;
-    
-    document.getElementById('resumoNivel').textContent = 
+
+    document.getElementById('resumoNivel').textContent =
       dadosRegistro.nivelAgua;
   }
   
@@ -275,20 +307,24 @@
       funcionario: null,
       funcionarioNome: null,
       empilhadeira: null,
+      horimetro: null,
       bateriaNova: null,
       nivelAgua: null
     };
-    
+
     // Limpar inputs
     document.getElementById('funcionario').value = '';
     document.getElementById('empilhadeira').value = '';
+    document.getElementById('horimetro').value = '';
     document.getElementById('bateria').value = '';
-    
+
     // Limpar info displays
     document.getElementById('funcionarioInfo').innerHTML = '';
     document.getElementById('funcionarioInfo').className = 'info-display';
     document.getElementById('empilhadeiraInfo').innerHTML = '';
     document.getElementById('empilhadeiraInfo').className = 'info-display';
+    document.getElementById('horimetroInfo').innerHTML = '';
+    document.getElementById('horimetroInfo').className = 'info-display';
     document.getElementById('bateriaInfo').innerHTML = '';
     document.getElementById('bateriaInfo').className = 'info-display';
     
@@ -375,15 +411,23 @@
       }
     });
     
-    // Bateria - Enter avança
-    document.getElementById('bateria').addEventListener('keypress', function(e) {
+    // Horimetro - Enter avança
+    document.getElementById('horimetro').addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
         validarPasso3();
       }
     });
-    
-    // Auto-maiúscula nos inputs
+
+    // Bateria - Enter avança
+    document.getElementById('bateria').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        validarPasso4();
+      }
+    });
+
+    // Auto-maiúscula nos inputs (exceto horimetro que é numérico)
     document.querySelectorAll('.qr-input').forEach(input => {
       input.addEventListener('input', function() {
         this.value = this.value.toUpperCase();

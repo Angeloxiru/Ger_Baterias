@@ -67,21 +67,22 @@
           </button>
         </div>
 
-        <!-- PASSO 3: Bateria -->
+        <!-- PASSO 3: Horimetro -->
         <div id="step3" class="step">
           <div class="step-header">
             <span class="step-number">3</span>
-            <h2>Escanear Bateria Nova</h2>
+            <h2>Horimetro da Empilhadeira</h2>
           </div>
           <div class="qr-input-group">
-            <label for="bateria">Código da Bateria</label>
-            <input 
-              type="text" 
-              id="bateria" 
-              class="qr-input" 
-              placeholder="BAT01"
-              autocomplete="off">
-            <div id="bateriaInfo" class="info-display"></div>
+            <label for="horimetro">Leitura do Horimetro</label>
+            <input
+              type="text"
+              id="horimetro"
+              class="qr-input"
+              placeholder="0000"
+              autocomplete="off"
+              inputmode="numeric">
+            <div id="horimetroInfo" class="info-display"></div>
           </div>
           <button onclick="voltarPasso(2)" class="btn btn-secondary">
             ← Voltar
@@ -91,29 +92,53 @@
           </button>
         </div>
 
-        <!-- PASSO 4: Nível de Água -->
+        <!-- PASSO 4: Bateria -->
         <div id="step4" class="step">
           <div class="step-header">
             <span class="step-number">4</span>
+            <h2>Escanear Bateria Nova</h2>
+          </div>
+          <div class="qr-input-group">
+            <label for="bateria">Código da Bateria</label>
+            <input
+              type="text"
+              id="bateria"
+              class="qr-input"
+              placeholder="BAT01"
+              autocomplete="off">
+            <div id="bateriaInfo" class="info-display"></div>
+          </div>
+          <button onclick="voltarPasso(3)" class="btn btn-secondary">
+            ← Voltar
+          </button>
+          <button onclick="validarPasso4()" class="btn btn-primary">
+            Próximo →
+          </button>
+        </div>
+
+        <!-- PASSO 5: Nível de Água -->
+        <div id="step5" class="step">
+          <div class="step-header">
+            <span class="step-number">5</span>
             <h2>Verificar Nível de Água</h2>
           </div>
-          
+
           <div class="nivel-agua-container">
             <label>Selecione o nível de água da bateria:</label>
-            
+
             <div class="nivel-opcoes">
               <button onclick="selecionarNivel('OK')" class="nivel-btn nivel-ok" data-nivel="OK">
                 <span class="nivel-icon">✓</span>
                 <span class="nivel-text">OK</span>
                 <span class="nivel-desc">Nível adequado</span>
               </button>
-              
+
               <button onclick="selecionarNivel('ATENÇÃO')" class="nivel-btn nivel-atencao" data-nivel="ATENÇÃO">
                 <span class="nivel-icon">⚠</span>
                 <span class="nivel-text">ATENÇÃO</span>
                 <span class="nivel-desc">Requer monitoramento</span>
               </button>
-              
+
               <button onclick="selecionarNivel('CRÍTICO')" class="nivel-btn nivel-critico" data-nivel="CRÍTICO">
                 <span class="nivel-icon">✕</span>
                 <span class="nivel-text">CRÍTICO</span>
@@ -122,18 +147,18 @@
             </div>
           </div>
 
-          <button onclick="voltarPasso(3)" class="btn btn-secondary">
+          <button onclick="voltarPasso(4)" class="btn btn-secondary">
             ← Voltar
           </button>
         </div>
 
-        <!-- PASSO 5: Confirmação -->
-        <div id="step5" class="step">
+        <!-- PASSO 6: Confirmação -->
+        <div id="step6" class="step">
           <div class="step-header">
             <span class="step-number">✓</span>
             <h2>Confirmar Registro</h2>
           </div>
-          
+
           <div class="resumo-container">
             <div class="resumo-item">
               <span class="resumo-label">Funcionário:</span>
@@ -142,6 +167,10 @@
             <div class="resumo-item">
               <span class="resumo-label">Empilhadeira:</span>
               <span id="resumoEmpilhadeira" class="resumo-valor"></span>
+            </div>
+            <div class="resumo-item">
+              <span class="resumo-label">Horimetro:</span>
+              <span id="resumoHorimetro" class="resumo-valor"></span>
             </div>
             <div class="resumo-item">
               <span class="resumo-label">Bateria Nova:</span>
@@ -153,7 +182,7 @@
             </div>
           </div>
 
-          <button onclick="voltarPasso(4)" class="btn btn-secondary">
+          <button onclick="voltarPasso(5)" class="btn btn-secondary">
             ← Voltar
           </button>
           <button onclick="finalizarRegistro()" class="btn btn-success" id="btnFinalizar">
@@ -166,7 +195,7 @@
 
     <!-- Rodapé -->
     <footer class="footer">
-      <p>Sistema de Controle de Baterias v1.0</p>
+      <p>Sistema de Controle de Baterias v1.1</p>
       <a href="?page=painel" target="_blank" class="link-painel">
         📊 Acessar Painel de Controle
       </a>

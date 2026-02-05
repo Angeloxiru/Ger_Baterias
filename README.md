@@ -36,12 +36,14 @@ Este sistema foi desenvolvido para controlar:
 ## ⚙️ Funcionalidades
 
 ### 📱 Interface de Registro (Coletores)
-- Leitura de QR Codes em 4 passos:
+- Registro de troca em 5 passos:
   1. Funcionário (ex: PL01)
   2. Empilhadeira (ex: N01)
-  3. Bateria nova (ex: BAT05)
-  4. Nível de água (OK/Atenção/Crítico)
+  3. Horimetro da empilhadeira (leitura do painel da máquina)
+  4. Bateria nova (ex: BAT05)
+  5. Nível de água (OK/Atenção/Crítico)
 - Validação em tempo real
+- Duração das baterias calculada por horimetro (horas de máquina reais)
 - Interface intuitiva adaptada para touch
 
 ### 📊 Painel de Controle
@@ -149,10 +151,10 @@ PL03      Pedro Oliveira
 2. Edite os códigos das empilhadeiras:
 
 ```
-Código Empilhadeira    Bateria Atual    Última Troca
-N01                    
-N02                    
-N03                    
+Código Empilhadeira    Bateria Atual    Última Troca    Último Horimetro
+N01
+N02
+N03
 ...
 ```
 
@@ -185,13 +187,14 @@ Tempo Alerta Amarelo (horas)       7
 ### Para Funcionários (Coletores Android)
 
 1. **Acesse o link da aplicação** no navegador do coletor
-2. **Siga os 4 passos:**
-   - 📱 Escaneie seu QR code
+2. **Siga os 5 passos:**
+   - 📱 Escaneie seu QR code (funcionário)
    - 🚜 Escaneie o QR da empilhadeira
+   - 🔢 Informe a leitura do **horimetro** da empilhadeira (painel da máquina)
    - 🔋 Escaneie o QR da bateria nova
    - 💧 Selecione o nível de água
-3. **Confirme** o registro
-4. Pronto! A troca foi registrada
+3. **Confirme** o registro no resumo
+4. Pronto! A troca foi registrada com a duração calculada pelo horimetro
 
 ### Para Supervisores (Painel)
 
@@ -212,8 +215,8 @@ Tempo Alerta Amarelo (horas)       7
 Edite o arquivo `styles.html` e altere as variáveis de cor:
 
 ```css
-/* Cor principal */
-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+/* Cor principal (body) */
+background-color: #667eea;
 
 /* Cores dos níveis de água */
 .nivel-ok { border-color: #00C851; }
@@ -266,6 +269,7 @@ Se a planilha ficar muito grande:
 ```
 BAT13    Em Carga    Carregador    [data atual]    0    OK    0    0
 ```
+(9 colunas — a última, Horimetro Instalação, fica vazia enquanto a bateria estiver em carga)
 
 ### Adicionar Novos Funcionários
 
@@ -325,6 +329,22 @@ Quando fizer nova implantação:
 2. Corrija manualmente o status se necessário
 3. Isso pode ocorrer se houver erro no último registro
 
+### Problema: Duração da bateria aparece como 0 horas
+
+**Possíveis causas:**
+1. A bateria foi instalada antes da versão 1.1 (sem horimetro registrado na instalação)
+   - Registros anteriores não têm horimetro de referência, então a duração não pode ser calculada
+   - Após a próxima troca com horimetro, os cálculos voltam ao normal
+2. O horimetro informado na troca atual é menor que o da instalação anterior
+   - Verifique se a leitura do horimetro foi digitada corretamente
+
+### Problema: Horimetro parece errado no painel
+
+**Solução:**
+1. O horimetro mostrado no painel ("Instalado no horimetro: Xh") é a leitura que foi informada na última troca
+2. Verifique a aba **Registros** para confirmar o valor registrado
+3. Se foi digitado errado, edite diretamente na planilha na coluna **Horimetro Instalação** da aba **Baterias**
+
 ---
 
 ## 📊 Estrutura de Dados
@@ -341,7 +361,8 @@ Armazena TODOS os registros de trocas realizadas.
 | Bateria Instalada | Bateria que entrou | BAT05 |
 | Bateria Removida | Bateria que saiu | BAT03 |
 | Nível Água | Status verificado | OK/Atenção/Crítico |
-| Duração Uso Anterior | Horas que a anterior trabalhou | 8.5 |
+| Duração Uso Anterior | Horas de máquina da anterior (por horimetro) | 8.5 |
+| Horimetro | Leitura do horimetro na troca | 1247 |
 
 ### Aba: Baterias
 Estado ATUAL de cada bateria.
@@ -352,16 +373,24 @@ Estado ATUAL de cada bateria.
 | Status | Em Uso / Em Carga | Em Carga |
 | Localização | Onde está | Carregador / N01 |
 | Início Status | Quando entrou neste status | 04/02/2026 14:30 |
-| Tempo Decorrido | Horas neste status | 5.2 |
+| Tempo Decorrido | Horas de carga neste status (por relógio) | 5.2 |
 | Último Nível Água | Última verificação | OK |
 | Total de Usos | Quantas vezes foi usada | 45 |
-| Média Duração | Tempo médio de trabalho | 7.8 |
+| Média Duração | Média de horas de máquina por uso (por horimetro) | 7.8 |
+| Horimetro Instalação | Horimetro da empilhadeira quando a bateria foi instalada | 1247 |
 
 ### Aba: Configurações
 Parâmetros do sistema e cadastro de funcionários.
 
 ### Aba: Equipamentos
 Estado atual de cada empilhadeira.
+
+| Coluna | Descrição | Exemplo |
+|--------|-----------|---------|
+| Código Empilhadeira | ID da empilhadeira | N01 |
+| Bateria Atual | Bateria instalada atualmente | BAT05 |
+| Última Troca | Timestamp da última troca | 04/02/2026 14:30 |
+| Último Horimetro | Última leitura do horimetro registrada | 1247 |
 
 ---
 
@@ -393,6 +422,14 @@ Para dúvidas ou problemas:
 
 ## 📝 Changelog
 
+### Versão 1.1 (Fevereiro 2026)
+- ✅ Registro do horimetro da empilhadeira no fluxo de troca
+- ✅ Duração das baterias calculada por horimetro (horas de máquina reais)
+- ✅ Média de duração no painel e relatório agora reflete horas de máquina
+- ✅ Histórico de baterias exibe horimetro e duração em h máq
+- ✅ Painel exibe horimetro de instalação nas baterias Em Uso
+- ✅ Otimizações de desempenho visual para Zebra MC2200 (800x480)
+
 ### Versão 1.0 (Fevereiro 2026)
 - ✅ Sistema completo de registro de trocas
 - ✅ Painel de monitoramento em tempo real
@@ -415,7 +452,7 @@ Todos os direitos reservados.
 Desenvolvido com ❤️ para otimizar o controle de baterias e aumentar a eficiência operacional.
 
 **Última atualização:** Fevereiro 2026
-**Versão:** 1.0
+**Versão:** 1.1
 
 ---
 
