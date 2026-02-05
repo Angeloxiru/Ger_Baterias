@@ -10,15 +10,16 @@
   
   body {
     font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
-    background-color: #667eea;
+    background-color: #2f3b57;
     min-height: 100vh;
-    padding: 15px;
+    padding: 12px;
+    font-size: 18px;
   }
   
   /* ==================== CONTAINER PRINCIPAL ==================== */
   
   .container {
-    max-width: 600px;
+    max-width: 520px;
     margin: 0 auto;
   }
   
@@ -28,29 +29,23 @@
     text-align: center;
     color: white;
     margin-bottom: 25px;
-    animation: fadeInDown 0.35s ease;
   }
 
   .header h1 {
-    font-size: 2rem;
+    font-size: 2.4rem;
     font-weight: 700;
     margin-bottom: 8px;
-  }
-  
-  .subtitle {
-    font-size: 1rem;
-    opacity: 0.9;
   }
   
   /* ==================== MENSAGENS ==================== */
   
   .mensagem {
     display: none;
-    padding: 15px 20px;
-    border-radius: 10px;
+    padding: 18px 22px;
+    border-radius: 12px;
     margin-bottom: 20px;
     font-weight: 500;
-    animation: slideInDown 0.4s ease;
+    font-size: 1.1rem;
   }
   
   .mensagem.sucesso {
@@ -75,10 +70,9 @@
   
   .card {
     background: white;
-    border-radius: 15px;
-    padding: 30px 25px;
+    border-radius: 18px;
+    padding: 32px 28px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-    animation: fadeInUp 0.35s ease;
     contain: layout style;
   }
   
@@ -90,34 +84,33 @@
   
   .step.active {
     display: block;
-    animation: fadeIn 0.25s ease;
   }
   
   .step-header {
     display: flex;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 25px;
-    padding-bottom: 15px;
+    gap: 18px;
+    margin-bottom: 28px;
+    padding-bottom: 18px;
     border-bottom: 2px solid #f0f0f0;
   }
   
   .step-number {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    width: 45px;
-    height: 45px;
+    width: 54px;
+    height: 54px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     font-weight: bold;
     flex-shrink: 0;
   }
   
   .step-header h2 {
-    font-size: 1.4rem;
+    font-size: 1.7rem;
     color: #333;
     font-weight: 600;
   }
@@ -133,16 +126,15 @@
     font-weight: 600;
     color: #555;
     margin-bottom: 10px;
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
   
   .qr-input {
     width: 100%;
-    padding: 18px 20px;
-    font-size: 1.3rem;
+    padding: 20px 22px;
+    font-size: 1.6rem;
     border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    border-radius: 12px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -157,10 +149,10 @@
   
   .info-display {
     margin-top: 12px;
-    padding: 12px 15px;
+    padding: 14px 16px;
     background: #f8f9fa;
     border-radius: 8px;
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     color: #666;
     min-height: 20px;
   }
@@ -184,7 +176,7 @@
     font-weight: 600;
     color: #555;
     margin-bottom: 20px;
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
   
   .nivel-opcoes {
@@ -198,35 +190,30 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 22px;
     border: 3px solid #e0e0e0;
     border-radius: 12px;
     background: white;
     cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s;
     text-align: center;
     touch-action: manipulation;
     -webkit-user-select: none;
     user-select: none;
   }
   
-  .nivel-btn:active {
-    transform: scale(0.98);
-  }
-  
   .nivel-icon {
-    font-size: 2.5rem;
-    margin-bottom: 8px;
+    font-size: 3rem;
+    margin-bottom: 10px;
   }
   
   .nivel-text {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     font-weight: bold;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
   }
   
   .nivel-desc {
-    font-size: 0.85rem;
+    font-size: 1rem;
     color: #666;
   }
   
@@ -289,15 +276,15 @@
   
   .resumo-container {
     background: #f8f9fa;
-    border-radius: 10px;
-    padding: 20px;
+    border-radius: 12px;
+    padding: 22px;
     margin-bottom: 25px;
   }
   
   .resumo-item {
     display: flex;
     justify-content: space-between;
-    padding: 12px 0;
+    padding: 14px 0;
     border-bottom: 1px solid #e0e0e0;
   }
   
@@ -308,22 +295,23 @@
   .resumo-label {
     font-weight: 600;
     color: #555;
+    font-size: 1.1rem;
   }
   
   .resumo-valor {
     font-weight: 700;
     color: #667eea;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
   }
   
   /* ==================== BOTÕES ==================== */
   
   .btn {
-    padding: 15px 30px;
-    font-size: 1.1rem;
+    padding: 18px 30px;
+    font-size: 1.3rem;
     font-weight: 600;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
     margin-right: 10px;
     margin-top: 10px;
@@ -331,10 +319,6 @@
     touch-action: manipulation;
     -webkit-user-select: none;
     user-select: none;
-  }
-
-  .btn:active {
-    transform: scale(0.97);
   }
 
   .btn-primary {
@@ -361,188 +345,6 @@
     cursor: not-allowed;
   }
   
-  /* ==================== RODAPÉ ==================== */
-  
-  .footer {
-    text-align: center;
-    color: white;
-    margin-top: 25px;
-    animation: fadeIn 0.4s ease;
-  }
-
-  .footer p {
-    margin-bottom: 10px;
-    opacity: 0.9;
-  }
-
-  .link-painel {
-    display: inline-block;
-    background: rgba(255,255,255,0.2);
-    color: white;
-    padding: 12px 25px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-    touch-action: manipulation;
-  }
-
-  .link-painel:active {
-    background: rgba(255,255,255,0.35);
-  }
-  
-  /* ==================== ANIMAÇÕES ==================== */
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-  
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(18px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes fadeInDown {
-    from {
-      opacity: 0;
-      transform: translateY(-14px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  @keyframes slideInDown {
-    from {
-      transform: translateY(-100%);
-    }
-    to {
-      transform: translateY(0);
-    }
-  }
-  
-  /* ==================== RESPONSIVIDADE (MC2200 portrait: 480px) ==================== */
-
-  @media (max-width: 480px) {
-    body {
-      padding: 8px;
-    }
-
-    .header {
-      margin-bottom: 16px;
-    }
-
-    .header h1 {
-      font-size: 1.5rem;
-      margin-bottom: 4px;
-    }
-
-    .subtitle {
-      font-size: 0.88rem;
-    }
-
-    .card {
-      padding: 18px 15px;
-      border-radius: 12px;
-    }
-
-    .step-header {
-      gap: 12px;
-      margin-bottom: 18px;
-      padding-bottom: 12px;
-    }
-
-    .step-number {
-      width: 36px;
-      height: 36px;
-      font-size: 1.1rem;
-    }
-
-    .step-header h2 {
-      font-size: 1.15rem;
-    }
-
-    .qr-input-group {
-      margin-bottom: 16px;
-    }
-
-    .qr-input {
-      font-size: 1.1rem;
-      padding: 14px;
-    }
-
-    .info-display {
-      padding: 10px 12px;
-      font-size: 0.88rem;
-    }
-
-    .nivel-agua-container label {
-      margin-bottom: 14px;
-      font-size: 0.95rem;
-    }
-
-    .nivel-opcoes {
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-
-    .nivel-btn {
-      padding: 14px;
-    }
-
-    .nivel-icon {
-      font-size: 2rem;
-      margin-bottom: 4px;
-    }
-
-    .nivel-text {
-      font-size: 1.1rem;
-    }
-
-    .nivel-desc {
-      font-size: 0.8rem;
-    }
-
-    .resumo-container {
-      padding: 14px;
-      margin-bottom: 18px;
-    }
-
-    .resumo-item {
-      padding: 10px 0;
-    }
-
-    .resumo-valor {
-      font-size: 1rem;
-    }
-
-    .btn {
-      padding: 13px 20px;
-      font-size: 1rem;
-      margin-top: 8px;
-    }
-
-    .footer {
-      margin-top: 16px;
-    }
-
-    .link-painel {
-      padding: 10px 20px;
-      font-size: 0.95rem;
-    }
-  }
-  
   /* ==================== LOADER ==================== */
   
   .loader {
@@ -551,12 +353,6 @@
     border-radius: 50%;
     width: 40px;
     height: 40px;
-    animation: spin 1s linear infinite;
     margin: 20px auto;
-  }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
   }
 </style>
