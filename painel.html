@@ -668,8 +668,10 @@
           `Faltam ${tempoRestante.toFixed(1)}h` : 
           'Carga Completa!';
       } else {
-        // Para baterias em uso, mostra tempo de uso
-        labelTempo = `Tempo de uso: ${tempoDecorrido.toFixed(1)}h`;
+        // Para baterias em uso, mostra horimetro de quando foi instalada
+        labelTempo = bateria.horimetroInstalacao !== '' ?
+          `Instalado no horimetro: ${bateria.horimetroInstalacao}h` :
+          'Horimetro não registrado';
       }
       
       const classNivelAgua = bateria.nivelAgua === 'OK' ? 'nivel-ok' : 
@@ -786,9 +788,14 @@
               
               <span class="detalhe-label">Nível Água:</span>
               <span class="detalhe-valor">${registro.nivelAgua}</span>
-              
+
+              ${registro.horimetro !== 'N/A' ? `
+              <span class="detalhe-label">Horimetro:</span>
+              <span class="detalhe-valor">${registro.horimetro}h</span>
+              ` : ''}
+
               ${registro.duracaoUso !== 'N/A' ? `
-              <span class="detalhe-label">Duração Uso:</span>
+              <span class="detalhe-label">Duração (h máq):</span>
               <span class="detalhe-valor">${registro.duracaoUso}h</span>
               ` : ''}
             </div>
@@ -858,7 +865,7 @@
           <tr style="background: #667eea; color: white;">
             <th style="padding: 12px; text-align: left;">Bateria</th>
             <th style="padding: 12px; text-align: center;">Usos</th>
-            <th style="padding: 12px; text-align: center;">Média (h)</th>
+            <th style="padding: 12px; text-align: center;">Média (h máq)</th>
             <th style="padding: 12px; text-align: center;">Status</th>
             <th style="padding: 12px; text-align: center;">Água</th>
           </tr>
