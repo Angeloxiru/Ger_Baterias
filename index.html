@@ -11,7 +11,6 @@
     <!-- Cabeçalho -->
     <header class="header">
       <h1>🔋 Troca de Bateria</h1>
-      <p class="subtitle">Sistema de Controle</p>
     </header>
 
     <!-- Área de Mensagens -->
@@ -28,8 +27,7 @@
             <h2>Escanear Funcionário</h2>
           </div>
           <div class="qr-input-group">
-            <label for="funcionario">Código do Funcionário</label>
-            <input 
+            <input
               type="text" 
               id="funcionario" 
               class="qr-input" 
@@ -50,8 +48,7 @@
             <h2>Escanear Empilhadeira</h2>
           </div>
           <div class="qr-input-group">
-            <label for="empilhadeira">Código da Empilhadeira</label>
-            <input 
+            <input
               type="text" 
               id="empilhadeira" 
               class="qr-input" 
@@ -74,7 +71,6 @@
             <h2>Horimetro da Empilhadeira</h2>
           </div>
           <div class="qr-input-group">
-            <label for="horimetro">Leitura do Horimetro</label>
             <input
               type="text"
               id="horimetro"
@@ -99,7 +95,6 @@
             <h2>Escanear Bateria Nova</h2>
           </div>
           <div class="qr-input-group">
-            <label for="bateria">Código da Bateria</label>
             <input
               type="text"
               id="bateria"
@@ -124,25 +119,20 @@
           </div>
 
           <div class="nivel-agua-container">
-            <label>Selecione o nível de água da bateria:</label>
-
             <div class="nivel-opcoes">
               <button onclick="selecionarNivel('OK')" class="nivel-btn nivel-ok" data-nivel="OK">
                 <span class="nivel-icon">✓</span>
                 <span class="nivel-text">OK</span>
-                <span class="nivel-desc">Nível adequado</span>
               </button>
 
               <button onclick="selecionarNivel('ATENÇÃO')" class="nivel-btn nivel-atencao" data-nivel="ATENÇÃO">
                 <span class="nivel-icon">⚠</span>
                 <span class="nivel-text">ATENÇÃO</span>
-                <span class="nivel-desc">Requer monitoramento</span>
               </button>
 
               <button onclick="selecionarNivel('CRÍTICO')" class="nivel-btn nivel-critico" data-nivel="CRÍTICO">
                 <span class="nivel-icon">✕</span>
                 <span class="nivel-text">CRÍTICO</span>
-                <span class="nivel-desc">Necessita água urgente</span>
               </button>
             </div>
           </div>
@@ -195,9 +185,8 @@
 
     <!-- Rodapé -->
     <footer class="footer">
-      <p>Sistema de Controle de Baterias v1.1</p>
       <a href="?page=painel" target="_blank" class="link-painel">
-        📊 Acessar Painel de Controle
+        📊 Painel
       </a>
     </footer>
   </div>
