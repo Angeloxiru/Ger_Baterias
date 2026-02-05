@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Registro de Troca de Bateria</title>
+  <?!= include('styles'); ?>
+</head>
+<body>
+  <div class="container">
+    <!-- Cabeçalho -->
+    <header class="header">
+      <h1>🔋 Troca de Bateria</h1>
+      <p class="subtitle">Sistema de Controle</p>
+    </header>
+
+    <!-- Área de Mensagens -->
+    <div id="mensagem" class="mensagem"></div>
+
+    <!-- Formulário de Registro -->
+    <div class="card">
+      <div class="step-container">
+        
+        <!-- PASSO 1: Funcionário -->
+        <div id="step1" class="step active">
+          <div class="step-header">
+            <span class="step-number">1</span>
+            <h2>Escanear Funcionário</h2>
+          </div>
+          <div class="qr-input-group">
+            <label for="funcionario">Código do Funcionário</label>
+            <input 
+              type="text" 
+              id="funcionario" 
+              class="qr-input" 
+              placeholder="PL01"
+              autocomplete="off"
+              autofocus>
+            <div id="funcionarioInfo" class="info-display"></div>
+          </div>
+          <button onclick="validarPasso1()" class="btn btn-primary">
+            Próximo →
+          </button>
+        </div>
+
+        <!-- PASSO 2: Empilhadeira -->
+        <div id="step2" class="step">
+          <div class="step-header">
+            <span class="step-number">2</span>
+            <h2>Escanear Empilhadeira</h2>
+          </div>
+          <div class="qr-input-group">
+            <label for="empilhadeira">Código da Empilhadeira</label>
+            <input 
+              type="text" 
+              id="empilhadeira" 
+              class="qr-input" 
+              placeholder="N01"
+              autocomplete="off">
+            <div id="empilhadeiraInfo" class="info-display"></div>
+          </div>
+          <button onclick="voltarPasso(1)" class="btn btn-secondary">
+            ← Voltar
+          </button>
+          <button onclick="validarPasso2()" class="btn btn-primary">
+            Próximo →
+          </button>
+        </div>
+
+        <!-- PASSO 3: Bateria -->
+        <div id="step3" class="step">
+          <div class="step-header">
+            <span class="step-number">3</span>
+            <h2>Escanear Bateria Nova</h2>
+          </div>
+          <div class="qr-input-group">
+            <label for="bateria">Código da Bateria</label>
+            <input 
+              type="text" 
+              id="bateria" 
+              class="qr-input" 
+              placeholder="BAT01"
+              autocomplete="off">
+            <div id="bateriaInfo" class="info-display"></div>
+          </div>
+          <button onclick="voltarPasso(2)" class="btn btn-secondary">
+            ← Voltar
+          </button>
+          <button onclick="validarPasso3()" class="btn btn-primary">
+            Próximo →
+          </button>
+        </div>
+
+        <!-- PASSO 4: Nível de Água -->
+        <div id="step4" class="step">
+          <div class="step-header">
+            <span class="step-number">4</span>
+            <h2>Verificar Nível de Água</h2>
+          </div>
+          
+          <div class="nivel-agua-container">
+            <label>Selecione o nível de água da bateria:</label>
+            
+            <div class="nivel-opcoes">
+              <button onclick="selecionarNivel('OK')" class="nivel-btn nivel-ok" data-nivel="OK">
+                <span class="nivel-icon">✓</span>
+                <span class="nivel-text">OK</span>
+                <span class="nivel-desc">Nível adequado</span>
+              </button>
+              
+              <button onclick="selecionarNivel('ATENÇÃO')" class="nivel-btn nivel-atencao" data-nivel="ATENÇÃO">
+                <span class="nivel-icon">⚠</span>
+                <span class="nivel-text">ATENÇÃO</span>
+                <span class="nivel-desc">Requer monitoramento</span>
+              </button>
+              
+              <button onclick="selecionarNivel('CRÍTICO')" class="nivel-btn nivel-critico" data-nivel="CRÍTICO">
+                <span class="nivel-icon">✕</span>
+                <span class="nivel-text">CRÍTICO</span>
+                <span class="nivel-desc">Necessita água urgente</span>
+              </button>
+            </div>
+          </div>
+
+          <button onclick="voltarPasso(3)" class="btn btn-secondary">
+            ← Voltar
+          </button>
+        </div>
+
+        <!-- PASSO 5: Confirmação -->
+        <div id="step5" class="step">
+          <div class="step-header">
+            <span class="step-number">✓</span>
+            <h2>Confirmar Registro</h2>
+          </div>
+          
+          <div class="resumo-container">
+            <div class="resumo-item">
+              <span class="resumo-label">Funcionário:</span>
+              <span id="resumoFuncionario" class="resumo-valor"></span>
+            </div>
+            <div class="resumo-item">
+              <span class="resumo-label">Empilhadeira:</span>
+              <span id="resumoEmpilhadeira" class="resumo-valor"></span>
+            </div>
+            <div class="resumo-item">
+              <span class="resumo-label">Bateria Nova:</span>
+              <span id="resumoBateria" class="resumo-valor"></span>
+            </div>
+            <div class="resumo-item">
+              <span class="resumo-label">Nível de Água:</span>
+              <span id="resumoNivel" class="resumo-valor"></span>
+            </div>
+          </div>
+
+          <button onclick="voltarPasso(4)" class="btn btn-secondary">
+            ← Voltar
+          </button>
+          <button onclick="finalizarRegistro()" class="btn btn-success" id="btnFinalizar">
+            ✓ Confirmar Registro
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+      <p>Sistema de Controle de Baterias v1.0</p>
+      <a href="?page=painel" target="_blank" class="link-painel">
+        📊 Acessar Painel de Controle
+      </a>
+    </footer>
+  </div>
+
+  <?!= include('script'); ?>
+</body>
+</html>

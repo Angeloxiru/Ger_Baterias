@@ -1,0 +1,400 @@
+<script>
+  // ==================== VARIÁVEIS GLOBAIS ====================
+  
+  let dadosRegistro = {
+    funcionario: null,
+    funcionarioNome: null,
+    empilhadeira: null,
+    bateriaNova: null,
+    nivelAgua: null
+  };
+  
+  let passoAtual = 1;
+  
+  // ==================== FUNÇÕES DE NAVEGAÇÃO ====================
+  
+  /**
+   * Exibe um passo específico
+   */
+  function mostrarPasso(numeroPasso) {
+    // Esconder todos os passos
+    document.querySelectorAll('.step').forEach(step => {
+      step.classList.remove('active');
+    });
+    
+    // Mostrar passo atual
+    document.getElementById('step' + numeroPasso).classList.add('active');
+    
+    // Focar no input do passo
+    setTimeout(() => {
+      const input = document.querySelector('#step' + numeroPasso + ' .qr-input');
+      if (input) {
+        input.focus();
+        input.select();
+      }
+    }, 100);
+    
+    passoAtual = numeroPasso;
+  }
+  
+  /**
+   * Volta para um passo anterior
+   */
+  function voltarPasso(numeroPasso) {
+    mostrarPasso(numeroPasso);
+  }
+  
+  // ==================== FUNÇÕES DE VALIDAÇÃO ====================
+  
+  /**
+   * Valida o Passo 1: Funcionário
+   */
+  function validarPasso1() {
+    const codigo = document.getElementById('funcionario').value.trim().toUpperCase();
+    
+    if (!codigo) {
+      mostrarMensagem('Digite o código do funcionário', 'erro');
+      return;
+    }
+    
+    mostrarLoader('funcionarioInfo');
+    
+    google.script.run
+      .withSuccessHandler(function(resultado) {
+        esconderLoader('funcionarioInfo');
+        
+        if (resultado.valido) {
+          dadosRegistro.funcionario = codigo;
+          dadosRegistro.funcionarioNome = resultado.nome;
+          
+          document.getElementById('funcionarioInfo').innerHTML = 
+            '✓ ' + resultado.nome;
+          document.getElementById('funcionarioInfo').className = 'info-display valido';
+          
+          // Avançar para próximo passo
+          setTimeout(() => {
+            mostrarPasso(2);
+          }, 500);
+          
+        } else {
+          document.getElementById('funcionarioInfo').innerHTML = 
+            '✕ ' + resultado.erro;
+          document.getElementById('funcionarioInfo').className = 'info-display erro';
+          mostrarMensagem(resultado.erro, 'erro');
+        }
+      })
+      .withFailureHandler(function(erro) {
+        esconderLoader('funcionarioInfo');
+        mostrarMensagem('Erro ao validar: ' + erro.message, 'erro');
+      })
+      .validarCodigo(codigo, 'funcionario');
+  }
+  
+  /**
+   * Valida o Passo 2: Empilhadeira
+   */
+  function validarPasso2() {
+    const codigo = document.getElementById('empilhadeira').value.trim().toUpperCase();
+    
+    if (!codigo) {
+      mostrarMensagem('Digite o código da empilhadeira', 'erro');
+      return;
+    }
+    
+    mostrarLoader('empilhadeiraInfo');
+    
+    google.script.run
+      .withSuccessHandler(function(resultado) {
+        esconderLoader('empilhadeiraInfo');
+        
+        if (resultado.valido) {
+          dadosRegistro.empilhadeira = codigo;
+          
+          document.getElementById('empilhadeiraInfo').innerHTML = 
+            '✓ Empilhadeira ' + codigo;
+          document.getElementById('empilhadeiraInfo').className = 'info-display valido';
+          
+          // Avançar para próximo passo
+          setTimeout(() => {
+            mostrarPasso(3);
+          }, 500);
+          
+        } else {
+          document.getElementById('empilhadeiraInfo').innerHTML = 
+            '✕ ' + resultado.erro;
+          document.getElementById('empilhadeiraInfo').className = 'info-display erro';
+          mostrarMensagem(resultado.erro, 'erro');
+        }
+      })
+      .withFailureHandler(function(erro) {
+        esconderLoader('empilhadeiraInfo');
+        mostrarMensagem('Erro ao validar: ' + erro.message, 'erro');
+      })
+      .validarCodigo(codigo, 'empilhadeira');
+  }
+  
+  /**
+   * Valida o Passo 3: Bateria
+   */
+  function validarPasso3() {
+    const codigo = document.getElementById('bateria').value.trim().toUpperCase();
+    
+    if (!codigo) {
+      mostrarMensagem('Digite o código da bateria', 'erro');
+      return;
+    }
+    
+    mostrarLoader('bateriaInfo');
+    
+    google.script.run
+      .withSuccessHandler(function(resultado) {
+        esconderLoader('bateriaInfo');
+        
+        if (resultado.valido) {
+          // Verificar se bateria está disponível
+          if (resultado.status === 'Em Uso') {
+            document.getElementById('bateriaInfo').innerHTML = 
+              '⚠ Esta bateria já está em uso em: ' + resultado.localizacao;
+            document.getElementById('bateriaInfo').className = 'info-display erro';
+            mostrarMensagem('Bateria já está em uso!', 'aviso');
+            return;
+          }
+          
+          dadosRegistro.bateriaNova = codigo;
+          
+          let statusTexto = resultado.status === 'Em Carga' ? 
+            'Carregando (' + resultado.localizacao + ')' : 
+            'Disponível';
+          
+          document.getElementById('bateriaInfo').innerHTML = 
+            '✓ Bateria ' + codigo + ' - ' + statusTexto;
+          document.getElementById('bateriaInfo').className = 'info-display valido';
+          
+          // Avançar para próximo passo
+          setTimeout(() => {
+            mostrarPasso(4);
+          }, 500);
+          
+        } else {
+          document.getElementById('bateriaInfo').innerHTML = 
+            '✕ ' + resultado.erro;
+          document.getElementById('bateriaInfo').className = 'info-display erro';
+          mostrarMensagem(resultado.erro, 'erro');
+        }
+      })
+      .withFailureHandler(function(erro) {
+        esconderLoader('bateriaInfo');
+        mostrarMensagem('Erro ao validar: ' + erro.message, 'erro');
+      })
+      .validarCodigo(codigo, 'bateria');
+  }
+  
+  /**
+   * Seleciona o nível de água e avança
+   */
+  function selecionarNivel(nivel) {
+    // Remover seleção anterior
+    document.querySelectorAll('.nivel-btn').forEach(btn => {
+      btn.classList.remove('selecionado');
+    });
+    
+    // Adicionar seleção ao botão clicado
+    event.target.closest('.nivel-btn').classList.add('selecionado');
+    
+    dadosRegistro.nivelAgua = nivel;
+    
+    // Avançar para resumo após pequeno delay
+    setTimeout(() => {
+      mostrarResumo();
+      mostrarPasso(5);
+    }, 400);
+  }
+  
+  /**
+   * Mostra o resumo final
+   */
+  function mostrarResumo() {
+    document.getElementById('resumoFuncionario').textContent = 
+      dadosRegistro.funcionario + ' - ' + dadosRegistro.funcionarioNome;
+    
+    document.getElementById('resumoEmpilhadeira').textContent = 
+      dadosRegistro.empilhadeira;
+    
+    document.getElementById('resumoBateria').textContent = 
+      dadosRegistro.bateriaNova;
+    
+    document.getElementById('resumoNivel').textContent = 
+      dadosRegistro.nivelAgua;
+  }
+  
+  // ==================== FINALIZAÇÃO ====================
+  
+  /**
+   * Finaliza e envia o registro
+   */
+  function finalizarRegistro() {
+    const btnFinalizar = document.getElementById('btnFinalizar');
+    btnFinalizar.disabled = true;
+    btnFinalizar.textContent = 'Processando...';
+    
+    google.script.run
+      .withSuccessHandler(function(resultado) {
+        if (resultado.sucesso) {
+          mostrarMensagem(
+            '✓ Troca registrada com sucesso! ' +
+            (resultado.duracaoAnterior > 0 ? 
+              'Bateria anterior durou ' + resultado.duracaoAnterior + ' horas.' : ''),
+            'sucesso'
+          );
+          
+          // Resetar formulário após 3 segundos
+          setTimeout(() => {
+            resetarFormulario();
+          }, 3000);
+          
+        } else {
+          mostrarMensagem('Erro: ' + resultado.mensagem, 'erro');
+          btnFinalizar.disabled = false;
+          btnFinalizar.textContent = '✓ Confirmar Registro';
+        }
+      })
+      .withFailureHandler(function(erro) {
+        mostrarMensagem('Erro ao registrar: ' + erro.message, 'erro');
+        btnFinalizar.disabled = false;
+        btnFinalizar.textContent = '✓ Confirmar Registro';
+      })
+      .registrarTroca(dadosRegistro);
+  }
+  
+  /**
+   * Reseta o formulário para novo registro
+   */
+  function resetarFormulario() {
+    // Limpar dados
+    dadosRegistro = {
+      funcionario: null,
+      funcionarioNome: null,
+      empilhadeira: null,
+      bateriaNova: null,
+      nivelAgua: null
+    };
+    
+    // Limpar inputs
+    document.getElementById('funcionario').value = '';
+    document.getElementById('empilhadeira').value = '';
+    document.getElementById('bateria').value = '';
+    
+    // Limpar info displays
+    document.getElementById('funcionarioInfo').innerHTML = '';
+    document.getElementById('funcionarioInfo').className = 'info-display';
+    document.getElementById('empilhadeiraInfo').innerHTML = '';
+    document.getElementById('empilhadeiraInfo').className = 'info-display';
+    document.getElementById('bateriaInfo').innerHTML = '';
+    document.getElementById('bateriaInfo').className = 'info-display';
+    
+    // Remover seleção de nível
+    document.querySelectorAll('.nivel-btn').forEach(btn => {
+      btn.classList.remove('selecionado');
+    });
+    
+    // Reabilitar botão
+    const btnFinalizar = document.getElementById('btnFinalizar');
+    btnFinalizar.disabled = false;
+    btnFinalizar.textContent = '✓ Confirmar Registro';
+    
+    // Voltar ao primeiro passo
+    mostrarPasso(1);
+    
+    // Esconder mensagem após um tempo
+    setTimeout(() => {
+      esconderMensagem();
+    }, 5000);
+  }
+  
+  // ==================== FUNÇÕES AUXILIARES ====================
+  
+  /**
+   * Mostra mensagem na tela
+   */
+  function mostrarMensagem(texto, tipo) {
+    const msgDiv = document.getElementById('mensagem');
+    msgDiv.textContent = texto;
+    msgDiv.className = 'mensagem ' + tipo;
+    msgDiv.style.display = 'block';
+    
+    // Auto-esconder após 5 segundos para erros e avisos
+    if (tipo !== 'sucesso') {
+      setTimeout(() => {
+        esconderMensagem();
+      }, 5000);
+    }
+  }
+  
+  /**
+   * Esconde mensagem
+   */
+  function esconderMensagem() {
+    const msgDiv = document.getElementById('mensagem');
+    msgDiv.style.display = 'none';
+  }
+  
+  /**
+   * Mostra loader em um elemento
+   */
+  function mostrarLoader(elementId) {
+    document.getElementById(elementId).innerHTML = 
+      '<div class="loader"></div>';
+  }
+  
+  /**
+   * Esconde loader de um elemento
+   */
+  function esconderLoader(elementId) {
+    // O conteúdo será substituído pela validação
+  }
+  
+  // ==================== EVENT LISTENERS ====================
+  
+  /**
+   * Permite avançar com Enter nos inputs
+   */
+  document.addEventListener('DOMContentLoaded', function() {
+    // Funcionário - Enter avança
+    document.getElementById('funcionario').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        validarPasso1();
+      }
+    });
+    
+    // Empilhadeira - Enter avança
+    document.getElementById('empilhadeira').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        validarPasso2();
+      }
+    });
+    
+    // Bateria - Enter avança
+    document.getElementById('bateria').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        validarPasso3();
+      }
+    });
+    
+    // Auto-maiúscula nos inputs
+    document.querySelectorAll('.qr-input').forEach(input => {
+      input.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+      });
+    });
+  });
+  
+  // ==================== INICIALIZAÇÃO ====================
+  
+  // Focar no primeiro input ao carregar
+  window.addEventListener('load', function() {
+    document.getElementById('funcionario').focus();
+  });
+</script>

@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Controle - Baterias</title>
+  <style>
+    /* ==================== RESET E CONFIGURAÇÕES GLOBAIS ==================== */
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+      background: #f5f7fa;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    /* ==================== CONTAINER PRINCIPAL ==================== */
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    /* ==================== CABEÇALHO ==================== */
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .header h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    
+    .header p {
+      opacity: 0.9;
+      font-size: 1.1rem;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-white {
+      background: white;
+      color: #667eea;
+    }
+    
+    .btn-white:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    /* ==================== ESTATÍSTICAS ==================== */
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      border-left: 4px solid #667eea;
+    }
+    
+    .stat-card.verde {
+      border-left-color: #00C851;
+    }
+    
+    .stat-card.amarelo {
+      border-left-color: #ffbb33;
+    }
+    
+    .stat-card.vermelho {
+      border-left-color: #ff4444;
+    }
+    
+    .stat-label {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    /* ==================== GRID DE BATERIAS ==================== */
+    
+    .section-title {
+      font-size: 1.5rem;
+      color: #333;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    
+    .baterias-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .bateria-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .bateria-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+    
+    .bateria-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .bateria-codigo {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .bateria-status {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    
+    .status-em-uso {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .status-em-carga {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .bateria-info {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .info-linha {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .info-linha:last-child {
+      border-bottom: none;
+    }
+    
+    .info-label {
+      color: #666;
+      font-size: 0.9rem;
+    }
+    
+    .info-valor {
+      font-weight: 600;
+      color: #333;
+    }
+    
+    /* ==================== BARRA DE PROGRESSO ==================== */
+    
+    .progresso-container {
+      margin-top: 15px;
+    }
+    
+    .progresso-label {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .progresso-barra {
+      height: 10px;
+      background: #e0e0e0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    
+    .progresso-preenchimento {
+      height: 100%;
+      transition: all 0.3s ease;
+      border-radius: 10px;
+    }
+    
+    .progresso-vermelho {
+      background: linear-gradient(90deg, #ff4444 0%, #cc0000 100%);
+    }
+    
+    .progresso-amarelo {
+      background: linear-gradient(90deg, #ffbb33 0%, #ff8800 100%);
+    }
+    
+    .progresso-verde {
+      background: linear-gradient(90deg, #00C851 0%, #007E33 100%);
+    }
+    
+    /* ==================== NÍVEL DE ÁGUA ==================== */
+    
+    .nivel-agua-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    
+    .nivel-ok {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .nivel-atencao {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .nivel-critico {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    /* ==================== LOADING ==================== */
+    
+    .loading {
+      text-align: center;
+      padding: 50px;
+    }
+    
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* ==================== MODAL ==================== */
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal.ativo {
+      display: flex;
+    }
+    
+    .modal-conteudo {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .modal-titulo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .modal-fechar {
+      background: none;
+      border: none;
+      font-size: 2rem;
+      color: #999;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      line-height: 1;
+    }
+    
+    .modal-fechar:hover {
+      color: #333;
+    }
+    
+    .historico-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      border-left: 3px solid #667eea;
+    }
+    
+    .historico-data {
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+    
+    .historico-detalhe {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 8px;
+      font-size: 0.9rem;
+    }
+    
+    .detalhe-label {
+      color: #666;
+    }
+    
+    .detalhe-valor {
+      font-weight: 600;
+      color: #333;
+    }
+    
+    /* ==================== RESPONSIVIDADE ==================== */
+    
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
+      .header h1 {
+        font-size: 1.5rem;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .baterias-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    
+    <!-- Cabeçalho -->
+    <div class="header">
+      <h1>📊 Painel de Controle - Baterias</h1>
+      <p>Monitoramento em tempo real do sistema de baterias</p>
+      <div class="header-actions">
+        <button class="btn btn-white" onclick="carregarDados()">
+          🔄 Atualizar
+        </button>
+        <button class="btn btn-white" onclick="abrirRelatorio()">
+          📈 Relatório de Desempenho
+        </button>
+        <a href="?" class="btn btn-white" style="text-decoration: none; display: inline-block;">
+          ← Voltar ao Registro
+        </a>
+      </div>
+    </div>
+    
+    <!-- Estatísticas -->
+    <div class="stats-grid" id="estatisticas">
+      <!-- Será preenchido dinamicamente -->
+    </div>
+    
+    <!-- Baterias em Carga -->
+    <h2 class="section-title">⚡ Baterias em Carregamento</h2>
+    <div class="baterias-grid" id="bateriasEmCarga">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Carregando dados...</p>
+      </div>
+    </div>
+    
+    <!-- Baterias em Uso -->
+    <h2 class="section-title">🔧 Baterias em Uso</h2>
+    <div class="baterias-grid" id="bateriasEmUso">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Carregando dados...</p>
+      </div>
+    </div>
+    
+  </div>
+  
+  <!-- Modal de Histórico -->
+  <div id="modalHistorico" class="modal">
+    <div class="modal-conteudo">
+      <div class="modal-header">
+        <h3 class="modal-titulo" id="modalTitulo">Histórico da Bateria</h3>
+        <button class="modal-fechar" onclick="fecharModal()">×</button>
+      </div>
+      <div id="modalBody">
+        <!-- Conteúdo do modal -->
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // ==================== VARIÁVEIS GLOBAIS ====================
+    
+    let dadosPainel = null;
+    let intervaloAtualizacao = null;
+    
+    // ==================== CARREGAMENTO DE DADOS ====================
+    
+    /**
+     * Carrega dados do painel
+     */
+    function carregarDados() {
+      google.script.run
+        .withSuccessHandler(function(resultado) {
+          if (resultado.sucesso) {
+            dadosPainel = resultado;
+            renderizarPainel();
+          } else {
+            console.error('Erro ao carregar dados:', resultado.erro);
+          }
+        })
+        .withFailureHandler(function(erro) {
+          console.error('Erro na requisição:', erro);
+        })
+        .obterDadosPainel();
+    }
+    
+    /**
+     * Renderiza todo o painel
+     */
+    function renderizarPainel() {
+      renderizarEstatisticas();
+      renderizarBaterias();
+    }
+    
+    /**
+     * Renderiza estatísticas gerais
+     */
+    function renderizarEstatisticas() {
+      const baterias = dadosPainel.baterias;
+      
+      const emCarga = baterias.filter(b => b.status === 'Em Carga').length;
+      const emUso = baterias.filter(b => b.status === 'Em Uso').length;
+      const prontas = baterias.filter(b => 
+        b.status === 'Em Carga' && parseFloat(b.tempoDecorrido) >= dadosPainel.tempoCargaCompleta
+      ).length;
+      const aguasAtencao = baterias.filter(b => 
+        b.nivelAgua === 'ATENÇÃO' || b.nivelAgua === 'CRÍTICO'
+      ).length;
+      
+      const html = `
+        <div class="stat-card">
+          <div class="stat-label">Total de Baterias</div>
+          <div class="stat-value">${baterias.length}</div>
+        </div>
+        <div class="stat-card amarelo">
+          <div class="stat-label">Em Carregamento</div>
+          <div class="stat-value">${emCarga}</div>
+        </div>
+        <div class="stat-card verde">
+          <div class="stat-label">Em Uso</div>
+          <div class="stat-value">${emUso}</div>
+        </div>
+        <div class="stat-card verde">
+          <div class="stat-label">Prontas para Uso</div>
+          <div class="stat-value">${prontas}</div>
+        </div>
+        ${aguasAtencao > 0 ? `
+        <div class="stat-card vermelho">
+          <div class="stat-label">Águas em Atenção</div>
+          <div class="stat-value">${aguasAtencao}</div>
+        </div>
+        ` : ''}
+      `;
+      
+      document.getElementById('estatisticas').innerHTML = html;
+    }
+    
+    /**
+     * Renderiza cards de baterias
+     */
+    function renderizarBaterias() {
+      const baterias = dadosPainel.baterias;
+      
+      const bateriasEmCarga = baterias.filter(b => b.status === 'Em Carga');
+      const bateriasEmUso = baterias.filter(b => b.status === 'Em Uso');
+      
+      // Renderizar baterias em carga
+      let htmlCarga = '';
+      if (bateriasEmCarga.length === 0) {
+        htmlCarga = '<p style="color: #666; padding: 20px;">Nenhuma bateria em carregamento no momento.</p>';
+      } else {
+        bateriasEmCarga.forEach(bateria => {
+          htmlCarga += gerarCardBateria(bateria, 'carga');
+        });
+      }
+      document.getElementById('bateriasEmCarga').innerHTML = htmlCarga;
+      
+      // Renderizar baterias em uso
+      let htmlUso = '';
+      if (bateriasEmUso.length === 0) {
+        htmlUso = '<p style="color: #666; padding: 20px;">Nenhuma bateria em uso no momento.</p>';
+      } else {
+        bateriasEmUso.forEach(bateria => {
+          htmlUso += gerarCardBateria(bateria, 'uso');
+        });
+      }
+      document.getElementById('bateriasEmUso').innerHTML = htmlUso;
+    }
+    
+    /**
+     * Gera HTML de um card de bateria
+     */
+    function gerarCardBateria(bateria, tipo) {
+      const tempoDecorrido = parseFloat(bateria.tempoDecorrido);
+      
+      let corProgresso = '';
+      let porcentagem = 0;
+      let labelTempo = '';
+      
+      if (tipo === 'carga') {
+        porcentagem = Math.min((tempoDecorrido / dadosPainel.tempoCargaCompleta) * 100, 100);
+        
+        if (tempoDecorrido < dadosPainel.tempoAlertaAmarelo) {
+          corProgresso = 'progresso-vermelho';
+        } else if (tempoDecorrido < dadosPainel.tempoCargaCompleta) {
+          corProgresso = 'progresso-amarelo';
+        } else {
+          corProgresso = 'progresso-verde';
+        }
+        
+        const tempoRestante = Math.max(dadosPainel.tempoCargaCompleta - tempoDecorrido, 0);
+        labelTempo = tempoRestante > 0 ? 
+          `Faltam ${tempoRestante.toFixed(1)}h` : 
+          'Carga Completa!';
+      } else {
+        // Para baterias em uso, mostra tempo de uso
+        labelTempo = `Tempo de uso: ${tempoDecorrido.toFixed(1)}h`;
+      }
+      
+      const classNivelAgua = bateria.nivelAgua === 'OK' ? 'nivel-ok' : 
+                             bateria.nivelAgua === 'ATENÇÃO' ? 'nivel-atencao' : 
+                             'nivel-critico';
+      
+      return `
+        <div class="bateria-card" onclick="abrirHistorico('${bateria.codigo}')">
+          <div class="bateria-header">
+            <div class="bateria-codigo">${bateria.codigo}</div>
+            <div class="bateria-status ${tipo === 'carga' ? 'status-em-carga' : 'status-em-uso'}">
+              ${bateria.status}
+            </div>
+          </div>
+          
+          <div class="bateria-info">
+            <div class="info-linha">
+              <span class="info-label">Localização:</span>
+              <span class="info-valor">${bateria.localizacao}</span>
+            </div>
+            <div class="info-linha">
+              <span class="info-label">Nível de Água:</span>
+              <span class="nivel-agua-badge ${classNivelAgua}">${bateria.nivelAgua}</span>
+            </div>
+            <div class="info-linha">
+              <span class="info-label">Total de Usos:</span>
+              <span class="info-valor">${bateria.totalUsos}</span>
+            </div>
+            <div class="info-linha">
+              <span class="info-label">Média de Duração:</span>
+              <span class="info-valor">${bateria.mediaDuracao}h</span>
+            </div>
+          </div>
+          
+          ${tipo === 'carga' ? `
+          <div class="progresso-container">
+            <div class="progresso-label">
+              <span>${tempoDecorrido.toFixed(1)}h / ${dadosPainel.tempoCargaCompleta}h</span>
+              <span>${labelTempo}</span>
+            </div>
+            <div class="progresso-barra">
+              <div class="progresso-preenchimento ${corProgresso}" style="width: ${porcentagem}%"></div>
+            </div>
+          </div>
+          ` : `
+          <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #f0f0f0;">
+            <div class="info-label" style="text-align: center;">${labelTempo}</div>
+          </div>
+          `}
+        </div>
+      `;
+    }
+    
+    // ==================== MODAL DE HISTÓRICO ====================
+    
+    /**
+     * Abre modal com histórico da bateria
+     */
+    function abrirHistorico(codigoBateria) {
+      document.getElementById('modalTitulo').textContent = 
+        'Histórico - ' + codigoBateria;
+      
+      document.getElementById('modalBody').innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Carregando histórico...</p>
+        </div>
+      `;
+      
+      document.getElementById('modalHistorico').classList.add('ativo');
+      
+      google.script.run
+        .withSuccessHandler(function(resultado) {
+          if (resultado.sucesso) {
+            renderizarHistorico(resultado.historico);
+          } else {
+            document.getElementById('modalBody').innerHTML = 
+              '<p style="color: #ff4444; text-align: center;">Erro ao carregar histórico</p>';
+          }
+        })
+        .withFailureHandler(function(erro) {
+          document.getElementById('modalBody').innerHTML = 
+            '<p style="color: #ff4444; text-align: center;">Erro: ' + erro.message + '</p>';
+        })
+        .obterHistoricoBateria(codigoBateria);
+    }
+    
+    /**
+     * Renderiza o histórico no modal
+     */
+    function renderizarHistorico(historico) {
+      if (historico.length === 0) {
+        document.getElementById('modalBody').innerHTML = 
+          '<p style="color: #666; text-align: center; padding: 20px;">Nenhum registro encontrado</p>';
+        return;
+      }
+      
+      let html = '';
+      historico.forEach(registro => {
+        html += `
+          <div class="historico-item">
+            <div class="historico-data">${registro.dataHora}</div>
+            <div class="historico-detalhe">
+              <span class="detalhe-label">Funcionário:</span>
+              <span class="detalhe-valor">${registro.funcionario}</span>
+              
+              <span class="detalhe-label">Empilhadeira:</span>
+              <span class="detalhe-valor">${registro.empilhadeira}</span>
+              
+              <span class="detalhe-label">Ação:</span>
+              <span class="detalhe-valor">
+                ${registro.bateriaInstalada ? 'Instalada' : 'Removida'}
+              </span>
+              
+              <span class="detalhe-label">Nível Água:</span>
+              <span class="detalhe-valor">${registro.nivelAgua}</span>
+              
+              ${registro.duracaoUso !== 'N/A' ? `
+              <span class="detalhe-label">Duração Uso:</span>
+              <span class="detalhe-valor">${registro.duracaoUso}h</span>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      });
+      
+      document.getElementById('modalBody').innerHTML = html;
+    }
+    
+    /**
+     * Fecha o modal
+     */
+    function fecharModal() {
+      document.getElementById('modalHistorico').classList.remove('ativo');
+    }
+    
+    // Fechar modal ao clicar fora
+    document.getElementById('modalHistorico').addEventListener('click', function(e) {
+      if (e.target === this) {
+        fecharModal();
+      }
+    });
+    
+    // ==================== RELATÓRIO ====================
+    
+    /**
+     * Abre relatório de desempenho
+     */
+    function abrirRelatorio() {
+      document.getElementById('modalTitulo').textContent = 
+        '📈 Relatório de Desempenho';
+      
+      document.getElementById('modalBody').innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Gerando relatório...</p>
+        </div>
+      `;
+      
+      document.getElementById('modalHistorico').classList.add('ativo');
+      
+      google.script.run
+        .withSuccessHandler(function(resultado) {
+          if (resultado.sucesso) {
+            renderizarRelatorio(resultado.relatorio);
+          } else {
+            document.getElementById('modalBody').innerHTML = 
+              '<p style="color: #ff4444; text-align: center;">Erro ao gerar relatório</p>';
+          }
+        })
+        .withFailureHandler(function(erro) {
+          document.getElementById('modalBody').innerHTML = 
+            '<p style="color: #ff4444; text-align: center;">Erro: ' + erro.message + '</p>';
+        })
+        .gerarRelatorioDesempenho();
+    }
+    
+    /**
+     * Renderiza relatório de desempenho
+     */
+    function renderizarRelatorio(relatorio) {
+      let html = '<div style="overflow-x: auto;">';
+      html += '<table style="width: 100%; border-collapse: collapse;">';
+      html += `
+        <thead>
+          <tr style="background: #667eea; color: white;">
+            <th style="padding: 12px; text-align: left;">Bateria</th>
+            <th style="padding: 12px; text-align: center;">Usos</th>
+            <th style="padding: 12px; text-align: center;">Média (h)</th>
+            <th style="padding: 12px; text-align: center;">Status</th>
+            <th style="padding: 12px; text-align: center;">Água</th>
+          </tr>
+        </thead>
+        <tbody>
+      `;
+      
+      relatorio.forEach((item, index) => {
+        const bgColor = index % 2 === 0 ? '#f8f9fa' : 'white';
+        html += `
+          <tr style="background: ${bgColor};">
+            <td style="padding: 12px; font-weight: 600;">${item.bateria}</td>
+            <td style="padding: 12px; text-align: center;">${item.totalUsos}</td>
+            <td style="padding: 12px; text-align: center; font-weight: 600; color: #667eea;">
+              ${item.mediaDuracao}
+            </td>
+            <td style="padding: 12px; text-align: center;">${item.statusAtual}</td>
+            <td style="padding: 12px; text-align: center;">
+              <span class="nivel-agua-badge ${
+                item.ultimoNivelAgua === 'OK' ? 'nivel-ok' : 
+                item.ultimoNivelAgua === 'ATENÇÃO' ? 'nivel-atencao' : 
+                'nivel-critico'
+              }">
+                ${item.ultimoNivelAgua}
+              </span>
+            </td>
+          </tr>
+        `;
+      });
+      
+      html += '</tbody></table></div>';
+      document.getElementById('modalBody').innerHTML = html;
+    }
+    
+    // ==================== INICIALIZAÇÃO ====================
+    
+    // Carregar dados ao iniciar
+    window.addEventListener('load', function() {
+      carregarDados();
+      
+      // Atualizar automaticamente a cada 30 segundos
+      intervaloAtualizacao = setInterval(carregarDados, 30000);
+    });
+    
+    // Limpar intervalo ao sair
+    window.addEventListener('beforeunload', function() {
+      if (intervaloAtualizacao) {
+        clearInterval(intervaloAtualizacao);
+      }
+    });
+  </script>
+</body>
+</html>

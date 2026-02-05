@@ -1,0 +1,512 @@
+<style>
+  /* ==================== RESET E CONFIGURAÇÕES GLOBAIS ==================== */
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 15px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* ==================== CONTAINER PRINCIPAL ==================== */
+  
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  /* ==================== CABEÇALHO ==================== */
+  
+  .header {
+    text-align: center;
+    color: white;
+    margin-bottom: 25px;
+    animation: fadeInDown 0.6s ease;
+  }
+  
+  .header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+    opacity: 0.9;
+  }
+  
+  /* ==================== MENSAGENS ==================== */
+  
+  .mensagem {
+    display: none;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    animation: slideInDown 0.4s ease;
+  }
+  
+  .mensagem.sucesso {
+    display: block;
+    background: #00C851;
+    color: white;
+  }
+  
+  .mensagem.erro {
+    display: block;
+    background: #ff4444;
+    color: white;
+  }
+  
+  .mensagem.aviso {
+    display: block;
+    background: #ffbb33;
+    color: #333;
+  }
+  
+  /* ==================== CARD PRINCIPAL ==================== */
+  
+  .card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px 25px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    animation: fadeInUp 0.6s ease;
+  }
+  
+  /* ==================== STEPS (PASSOS) ==================== */
+  
+  .step {
+    display: none;
+  }
+  
+  .step.active {
+    display: block;
+    animation: fadeIn 0.4s ease;
+  }
+  
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+  }
+  
+  .step-number {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+  
+  .step-header h2 {
+    font-size: 1.4rem;
+    color: #333;
+    font-weight: 600;
+  }
+  
+  /* ==================== INPUTS ==================== */
+  
+  .qr-input-group {
+    margin-bottom: 25px;
+  }
+  
+  .qr-input-group label {
+    display: block;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 10px;
+    font-size: 1rem;
+  }
+  
+  .qr-input {
+    width: 100%;
+    padding: 18px 20px;
+    font-size: 1.3rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+  
+  .qr-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+  
+  .info-display {
+    margin-top: 12px;
+    padding: 12px 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #666;
+    min-height: 20px;
+  }
+  
+  .info-display.valido {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+  
+  .info-display.erro {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+  
+  /* ==================== NÍVEL DE ÁGUA ==================== */
+  
+  .nivel-agua-container label {
+    display: block;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 20px;
+    font-size: 1rem;
+  }
+  
+  .nivel-opcoes {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+  }
+  
+  .nivel-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border: 3px solid #e0e0e0;
+    border-radius: 12px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+  }
+  
+  .nivel-btn:active {
+    transform: scale(0.98);
+  }
+  
+  .nivel-icon {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+  }
+  
+  .nivel-text {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .nivel-desc {
+    font-size: 0.85rem;
+    color: #666;
+  }
+  
+  /* Cores específicas para cada nível */
+  .nivel-ok {
+    border-color: #00C851;
+  }
+  
+  .nivel-ok:hover,
+  .nivel-ok.selecionado {
+    background: #00C851;
+    border-color: #00C851;
+  }
+  
+  .nivel-ok:hover .nivel-icon,
+  .nivel-ok.selecionado .nivel-icon {
+    color: white;
+  }
+  
+  .nivel-ok:hover .nivel-text,
+  .nivel-ok.selecionado .nivel-text {
+    color: white;
+  }
+  
+  .nivel-ok:hover .nivel-desc,
+  .nivel-ok.selecionado .nivel-desc {
+    color: rgba(255,255,255,0.9);
+  }
+  
+  .nivel-atencao {
+    border-color: #ffbb33;
+  }
+  
+  .nivel-atencao:hover,
+  .nivel-atencao.selecionado {
+    background: #ffbb33;
+    border-color: #ffbb33;
+  }
+  
+  .nivel-atencao:hover .nivel-icon,
+  .nivel-atencao.selecionado .nivel-icon {
+    color: white;
+  }
+  
+  .nivel-atencao:hover .nivel-text,
+  .nivel-atencao.selecionado .nivel-text {
+    color: white;
+  }
+  
+  .nivel-atencao:hover .nivel-desc,
+  .nivel-atencao.selecionado .nivel-desc {
+    color: rgba(255,255,255,0.9);
+  }
+  
+  .nivel-critico {
+    border-color: #ff4444;
+  }
+  
+  .nivel-critico:hover,
+  .nivel-critico.selecionado {
+    background: #ff4444;
+    border-color: #ff4444;
+  }
+  
+  .nivel-critico:hover .nivel-icon,
+  .nivel-critico.selecionado .nivel-icon {
+    color: white;
+  }
+  
+  .nivel-critico:hover .nivel-text,
+  .nivel-critico.selecionado .nivel-text {
+    color: white;
+  }
+  
+  .nivel-critico:hover .nivel-desc,
+  .nivel-critico.selecionado .nivel-desc {
+    color: rgba(255,255,255,0.9);
+  }
+  
+  /* ==================== RESUMO ==================== */
+  
+  .resumo-container {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 25px;
+  }
+  
+  .resumo-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .resumo-item:last-child {
+    border-bottom: none;
+  }
+  
+  .resumo-label {
+    font-weight: 600;
+    color: #555;
+  }
+  
+  .resumo-valor {
+    font-weight: 700;
+    color: #667eea;
+    font-size: 1.1rem;
+  }
+  
+  /* ==================== BOTÕES ==================== */
+  
+  .btn {
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: 10px;
+    margin-top: 10px;
+    width: calc(50% - 5px);
+  }
+  
+  .btn:active {
+    transform: scale(0.98);
+  }
+  
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 100%;
+    margin-right: 0;
+  }
+  
+  .btn-primary:hover {
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  }
+  
+  .btn-secondary {
+    background: #e0e0e0;
+    color: #555;
+  }
+  
+  .btn-secondary:hover {
+    background: #d0d0d0;
+  }
+  
+  .btn-success {
+    background: #00C851;
+    color: white;
+    width: 100%;
+    margin-right: 0;
+  }
+  
+  .btn-success:hover {
+    box-shadow: 0 5px 15px rgba(0, 200, 81, 0.4);
+  }
+  
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  /* ==================== RODAPÉ ==================== */
+  
+  .footer {
+    text-align: center;
+    color: white;
+    margin-top: 25px;
+    animation: fadeIn 0.8s ease;
+  }
+  
+  .footer p {
+    margin-bottom: 10px;
+    opacity: 0.9;
+  }
+  
+  .link-painel {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+  }
+  
+  .link-painel:hover {
+    background: rgba(255,255,255,0.3);
+    transform: translateY(-2px);
+  }
+  
+  /* ==================== ANIMAÇÕES ==================== */
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideInDown {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  
+  /* ==================== RESPONSIVIDADE ==================== */
+  
+  @media (max-width: 480px) {
+    body {
+      padding: 10px;
+    }
+    
+    .header h1 {
+      font-size: 1.6rem;
+    }
+    
+    .card {
+      padding: 20px 18px;
+    }
+    
+    .step-header h2 {
+      font-size: 1.2rem;
+    }
+    
+    .qr-input {
+      font-size: 1.1rem;
+      padding: 15px;
+    }
+    
+    .btn {
+      padding: 13px 20px;
+      font-size: 1rem;
+    }
+  }
+  
+  /* ==================== LOADER ==================== */
+  
+  .loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
