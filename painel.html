@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Painel de Controle - Baterias</title>
   <style>
     /* ==================== RESET E CONFIGURAÇÕES GLOBAIS ==================== */
@@ -11,6 +11,7 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
     
     body {
@@ -35,7 +36,7 @@
       padding: 30px;
       border-radius: 15px;
       margin-bottom: 30px;
-      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
     }
     
     .header h1 {
@@ -62,17 +63,18 @@
       cursor: pointer;
       font-weight: 600;
       font-size: 0.95rem;
-      transition: all 0.3s ease;
+      touch-action: manipulation;
+      -webkit-user-select: none;
+      user-select: none;
     }
-    
+
     .btn-white {
       background: white;
       color: #667eea;
     }
-    
-    .btn-white:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+
+    .btn-white:active {
+      opacity: 0.8;
     }
     
     /* ==================== ESTATÍSTICAS ==================== */
@@ -138,14 +140,13 @@
       background: white;
       border-radius: 12px;
       padding: 20px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       cursor: pointer;
+      touch-action: manipulation;
     }
-    
-    .bateria-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+
+    .bateria-card:active {
+      opacity: 0.85;
     }
     
     .bateria-header {
@@ -228,7 +229,7 @@
     
     .progresso-preenchimento {
       height: 100%;
-      transition: all 0.3s ease;
+      transition: width 0.3s;
       border-radius: 10px;
     }
     
@@ -342,13 +343,15 @@
       font-size: 2rem;
       color: #999;
       cursor: pointer;
-      padding: 0;
-      width: 30px;
-      height: 30px;
-      line-height: 1;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
     }
-    
-    .modal-fechar:hover {
+
+    .modal-fechar:active {
       color: #333;
     }
     
@@ -388,17 +391,85 @@
       body {
         padding: 10px;
       }
-      
+
       .header h1 {
         font-size: 1.5rem;
       }
-      
+
       .stats-grid {
         grid-template-columns: 1fr;
       }
-      
+
       .baterias-grid {
         grid-template-columns: 1fr;
+      }
+    }
+
+    /* ==================== MC2200 portrait (480px) ==================== */
+
+    @media (max-width: 480px) {
+      body {
+        padding: 8px;
+      }
+
+      .header {
+        padding: 18px;
+        margin-bottom: 18px;
+        border-radius: 12px;
+      }
+
+      .header h1 {
+        font-size: 1.25rem;
+        margin-bottom: 6px;
+      }
+
+      .header p {
+        font-size: 0.9rem;
+      }
+
+      .header-actions {
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .btn {
+        padding: 10px 16px;
+        font-size: 0.88rem;
+      }
+
+      .stat-card {
+        padding: 16px;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+      }
+
+      .section-title {
+        font-size: 1.15rem;
+        margin-bottom: 12px;
+      }
+
+      .bateria-card {
+        padding: 14px;
+      }
+
+      .bateria-codigo {
+        font-size: 1.1rem;
+      }
+
+      .modal-conteudo {
+        width: 96%;
+        padding: 18px;
+        border-radius: 12px;
+      }
+
+      .modal-titulo {
+        font-size: 1.15rem;
+      }
+
+      .historico-detalhe {
+        font-size: 0.85rem;
       }
     }
   </style>
