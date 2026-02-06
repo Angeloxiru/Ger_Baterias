@@ -840,32 +840,35 @@
      * Renderiza relatório de desempenho
      */
     function renderizarRelatorio(relatorio) {
+      const relatorioOrdenado = [...relatorio].sort((a, b) =>
+        a.bateria.localeCompare(b.bateria, 'pt-BR', { numeric: true })
+      );
       let html = '<div style="overflow-x: auto;">';
       html += '<table style="width: 100%; border-collapse: collapse;">';
       html += `
         <thead>
           <tr style="background: #667eea; color: white;">
-            <th style="padding: 12px; text-align: left;">Bateria</th>
-            <th style="padding: 12px; text-align: center;">Usos</th>
-            <th style="padding: 12px; text-align: center;">Média (h máq)</th>
-            <th style="padding: 12px; text-align: center;">Status</th>
-            <th style="padding: 12px; text-align: center;">Água</th>
+            <th style="padding: 12px; text-align: left; font-size: 1.8rem;">Bateria</th>
+            <th style="padding: 12px; text-align: center; font-size: 1.8rem;">Usos</th>
+            <th style="padding: 12px; text-align: center; font-size: 1.8rem;">Média (h máq)</th>
+            <th style="padding: 12px; text-align: center; font-size: 1.8rem;">Status</th>
+            <th style="padding: 12px; text-align: center; font-size: 1.8rem;">Água</th>
           </tr>
         </thead>
         <tbody>
       `;
       
-      relatorio.forEach((item, index) => {
+      relatorioOrdenado.forEach((item, index) => {
         const bgColor = index % 2 === 0 ? '#f8f9fa' : 'white';
         html += `
           <tr style="background: ${bgColor};">
-            <td style="padding: 12px; font-weight: 600;">${item.bateria}</td>
-            <td style="padding: 12px; text-align: center;">${item.totalUsos}</td>
-            <td style="padding: 12px; text-align: center; font-weight: 600; color: #667eea;">
+            <td style="padding: 12px; font-weight: 600; font-size: 1.8rem;">${item.bateria}</td>
+            <td style="padding: 12px; text-align: center; font-size: 1.8rem;">${item.totalUsos}</td>
+            <td style="padding: 12px; text-align: center; font-weight: 600; color: #667eea; font-size: 1.8rem;">
               ${item.mediaDuracao}
             </td>
-            <td style="padding: 12px; text-align: center;">${item.statusAtual}</td>
-            <td style="padding: 12px; text-align: center;">
+            <td style="padding: 12px; text-align: center; font-size: 1.8rem;">${item.statusAtual}</td>
+            <td style="padding: 12px; text-align: center; font-size: 1.8rem;">
               <span class="nivel-agua-badge ${
                 item.ultimoNivelAgua === 'OK' ? 'nivel-ok' : 
                 item.ultimoNivelAgua === 'ATENÇÃO' ? 'nivel-atencao' : 
