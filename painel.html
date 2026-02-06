@@ -53,7 +53,7 @@
       display: flex;
       gap: 15px;
       margin-top: 20px;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
     }
     
     .btn {
@@ -480,16 +480,15 @@
     <!-- Cabeçalho -->
     <div class="header">
       <h1>📊 Painel de Controle - Baterias</h1>
-      <p>Monitoramento em tempo real do sistema de baterias</p>
       <div class="header-actions">
         <button class="btn btn-white" onclick="carregarDados()">
-          🔄 Atualizar
+          Atualizar
         </button>
         <button class="btn btn-white" onclick="abrirRelatorio()">
-          📈 Relatório de Desempenho
+          Desempenho
         </button>
         <a href="?" class="btn btn-white" style="text-decoration: none; display: inline-block;">
-          ← Voltar ao Registro
+          Voltar
         </a>
       </div>
     </div>
@@ -575,36 +574,19 @@
       
       const emCarga = baterias.filter(b => b.status === 'Em Carga').length;
       const emUso = baterias.filter(b => b.status === 'Em Uso').length;
-      const prontas = baterias.filter(b => 
-        b.status === 'Em Carga' && parseFloat(b.tempoDecorrido) >= dadosPainel.tempoCargaCompleta
-      ).length;
-      const aguasAtencao = baterias.filter(b => 
-        b.nivelAgua === 'ATENÇÃO' || b.nivelAgua === 'CRÍTICO'
-      ).length;
-      
       const html = `
         <div class="stat-card">
-          <div class="stat-label">Total de Baterias</div>
+          <div class="stat-label">Total</div>
           <div class="stat-value">${baterias.length}</div>
         </div>
         <div class="stat-card amarelo">
-          <div class="stat-label">Em Carregamento</div>
+          <div class="stat-label">Carregando</div>
           <div class="stat-value">${emCarga}</div>
         </div>
         <div class="stat-card verde">
           <div class="stat-label">Em Uso</div>
           <div class="stat-value">${emUso}</div>
         </div>
-        <div class="stat-card verde">
-          <div class="stat-label">Prontas para Uso</div>
-          <div class="stat-value">${prontas}</div>
-        </div>
-        ${aguasAtencao > 0 ? `
-        <div class="stat-card vermelho">
-          <div class="stat-label">Águas em Atenção</div>
-          <div class="stat-value">${aguasAtencao}</div>
-        </div>
-        ` : ''}
       `;
       
       document.getElementById('estatisticas').innerHTML = html;
@@ -858,32 +840,35 @@
      * Renderiza relatório de desempenho
      */
     function renderizarRelatorio(relatorio) {
+      const relatorioOrdenado = [...relatorio].sort((a, b) =>
+        a.bateria.localeCompare(b.bateria, 'pt-BR', { numeric: true })
+      );
       let html = '<div style="overflow-x: auto;">';
       html += '<table style="width: 100%; border-collapse: collapse;">';
       html += `
         <thead>
           <tr style="background: #667eea; color: white;">
-            <th style="padding: 12px; text-align: left;">Bateria</th>
-            <th style="padding: 12px; text-align: center;">Usos</th>
-            <th style="padding: 12px; text-align: center;">Média (h máq)</th>
-            <th style="padding: 12px; text-align: center;">Status</th>
-            <th style="padding: 12px; text-align: center;">Água</th>
+            <th style="padding: 12px; text-align: left; font-size: 1.8rem;">Bateria</th>
+            <th style="padding: 12px; text-align: center; font-size: 1.8rem;">Usos</th>
+            <th style="padding: 12px; text-align: center; font-size: 1.8rem;">Média (h máq)</th>
+            <th style="padding: 12px; text-align: center; font-size: 1.8rem;">Status</th>
+            <th style="padding: 12px; text-align: center; font-size: 1.8rem;">Água</th>
           </tr>
         </thead>
         <tbody>
       `;
       
-      relatorio.forEach((item, index) => {
+      relatorioOrdenado.forEach((item, index) => {
         const bgColor = index % 2 === 0 ? '#f8f9fa' : 'white';
         html += `
           <tr style="background: ${bgColor};">
-            <td style="padding: 12px; font-weight: 600;">${item.bateria}</td>
-            <td style="padding: 12px; text-align: center;">${item.totalUsos}</td>
-            <td style="padding: 12px; text-align: center; font-weight: 600; color: #667eea;">
+            <td style="padding: 12px; font-weight: 600; font-size: 1.8rem;">${item.bateria}</td>
+            <td style="padding: 12px; text-align: center; font-size: 1.8rem;">${item.totalUsos}</td>
+            <td style="padding: 12px; text-align: center; font-weight: 600; color: #667eea; font-size: 1.8rem;">
               ${item.mediaDuracao}
             </td>
-            <td style="padding: 12px; text-align: center;">${item.statusAtual}</td>
-            <td style="padding: 12px; text-align: center;">
+            <td style="padding: 12px; text-align: center; font-size: 1.8rem;">${item.statusAtual}</td>
+            <td style="padding: 12px; text-align: center; font-size: 1.8rem;">
               <span class="nivel-agua-badge ${
                 item.ultimoNivelAgua === 'OK' ? 'nivel-ok' : 
                 item.ultimoNivelAgua === 'ATENÇÃO' ? 'nivel-atencao' : 
