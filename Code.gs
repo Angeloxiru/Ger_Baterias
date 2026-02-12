@@ -484,19 +484,15 @@ function obterDadosPainel() {
     }
 
     // Processar novas seções
-    var equipamentos = obterDadosEquipamentos(equipamentosData, registrosData);
+    var equipamentos = obterDadosEquipamentos(equipamentosData, registrosData, configData);
     var equipe = obterDadosEquipe(configData, registrosData);
     var atividadeRecente = obterAtividadeRecente(registrosData);
 
-    // Calcular alertas
+    // Calcular alertas (apenas água crítica)
     var aguaCritica = [];
-    var cargaExcessiva = [];
     for (var j = 0; j < baterias.length; j++) {
       if (baterias[j].nivelAgua === 'CRÍTICO') {
         aguaCritica.push(baterias[j]);
-      }
-      if (baterias[j].status === 'Em Carga' && parseFloat(baterias[j].tempoDecorrido) > 12) {
-        cargaExcessiva.push(baterias[j]);
       }
     }
 
@@ -529,8 +525,7 @@ function obterDadosPainel() {
       equipe: equipe,
       atividadeRecente: atividadeRecente,
       alertas: {
-        aguaCritica: aguaCritica,
-        cargaExcessiva: cargaExcessiva
+        aguaCritica: aguaCritica
       },
       estatisticasExtras: {
         alertasAgua: alertasAgua,
@@ -551,7 +546,7 @@ function obterDadosPainel() {
 /**
  * Obtém dados das empilhadeiras com último operador
  */
-function obterDadosEquipamentos(equipamentosData, registrosData) {
+function obterDadosEquipamentos(equipamentosData, registrosData, configData) {
   var resultado = [];
   var tz = Session.getScriptTimeZone();
 
@@ -564,6 +559,17 @@ function obterDadosEquipamentos(equipamentosData, registrosData) {
       if (registrosData[j][3] === codigo) {
         ultimoOperador = registrosData[j][2];
         break;
+      }
+    }
+
+    // Buscar nome do operador na aba Configurações
+    var ultimoOperadorNome = '';
+    if (ultimoOperador) {
+      for (var k = 6; k < configData.length; k++) {
+        if (configData[k][0] === ultimoOperador) {
+          ultimoOperadorNome = configData[k][1];
+          break;
+        }
       }
     }
 
@@ -581,7 +587,8 @@ function obterDadosEquipamentos(equipamentosData, registrosData) {
       bateriaAtual: equipamentosData[i][1] !== undefined ? String(equipamentosData[i][1]) : '',
       ultimaTroca: ultimaTroca,
       ultimoHorimetro: equipamentosData[i][3] !== undefined && equipamentosData[i][3] !== '' ? equipamentosData[i][3] : '',
-      ultimoOperador: ultimoOperador
+      ultimoOperador: ultimoOperador,
+      ultimoOperadorNome: ultimoOperadorNome
     });
   }
 
@@ -632,14 +639,22 @@ function obterDadosEquipe(configData, registrosData) {
       }
     }
 
-    resultado.push({
-      codigo: codigoFunc,
-      nome: nomeFunc,
-      trocasSemana: trocasSemana,
-      trocasTotal: trocasTotal,
-      ultimaAtividade: ultimaAtividade
-    });
+    // Só incluir funcionários que já fizeram pelo menos 1 troca
+    if (trocasTotal > 0) {
+      resultado.push({
+        codigo: codigoFunc,
+        nome: nomeFunc,
+        trocasSemana: trocasSemana,
+        trocasTotal: trocasTotal,
+        ultimaAtividade: ultimaAtividade
+      });
+    }
   }
+
+  // Ordenar por trocas na semana (maior para menor)
+  resultado.sort(function(a, b) {
+    return b.trocasSemana - a.trocasSemana;
+  });
 
   return resultado;
 }
