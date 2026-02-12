@@ -2,298 +2,579 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Painel de Controle - Baterias</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Painel de Controle</title>
   <style>
-    /* ==================== RESET E CONFIGURAÇÕES GLOBAIS ==================== */
-    
+    /* ==================== RESET E BASE MOBILE-FIRST ==================== */
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
     }
-    
+
     body {
       font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
-      background: #f5f7fa;
-      padding: 20px;
+      background: #f0f2f5;
       min-height: 100vh;
+      font-size: 14px;
+      -webkit-text-size-adjust: 100%;
+      padding-bottom: 20px;
     }
-    
-    /* ==================== CONTAINER PRINCIPAL ==================== */
-    
+
     .container {
-      max-width: 100vh;
-      margin: 0 auto;
+      max-width: 100%;
+      width: 100%;
+      padding: 0;
     }
-    
-    /* ==================== CABEÇALHO ==================== */
-    
+
+    /* ==================== HEADER COMPACTO ==================== */
+
     .header {
       background: linear-gradient(135deg, #067eea 0%, #464ba2 100%);
       color: white;
-      padding: 30px;
-      border-radius: 15px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
-    }
-    
-    .header h1 {
-      font-size: 3rem;
-      margin-bottom: 10px;
-    }
-    
-    .header p {
-      opacity: 0.9;
-      font-size: 2.1rem;
-    }
-    
-    .header-actions {
+      padding: 14px 16px;
       display: flex;
-      gap: 15px;
-      margin-top: 20px;
-      flex-wrap: nowrap;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 200;
     }
-    
+
+    .header h1 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .header-buttons {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
     .btn {
-      padding: 12px 25px;
+      padding: 8px 14px;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
-      font-size: 1.95rem;
+      font-size: 0.78rem;
       touch-action: manipulation;
       -webkit-user-select: none;
       user-select: none;
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .btn-white {
-      background: white;
+      background: rgba(255,255,255,0.95);
       color: #667eea;
+      text-decoration: none;
     }
 
     .btn-white:active {
-      opacity: 0.8;
+      opacity: 0.7;
+      transform: scale(0.96);
     }
-    
+
+    /* ==================== BANNER DE ALERTAS ==================== */
+
+    .alertas-banner {
+      background: linear-gradient(135deg, #ff4444, #cc0000);
+      color: white;
+      margin: 8px;
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      animation: slideDown 0.3s ease;
+    }
+
+    .alertas-banner.visivel {
+      display: flex;
+    }
+
+    .alertas-conteudo {
+      flex: 1;
+    }
+
+    .alerta-item {
+      padding: 3px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .alerta-item::before {
+      content: '\26A0';
+      font-size: 0.9rem;
+    }
+
+    .alertas-fechar {
+      background: rgba(255,255,255,0.25);
+      border: none;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      cursor: pointer;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     /* ==================== ESTATÍSTICAS ==================== */
-    
+
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      padding: 8px 8px 4px;
     }
-    
+
     .stat-card {
       background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-      border-left: 4px solid #667eea;
+      padding: 10px 6px;
+      border-radius: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      text-align: center;
+      border-top: 3px solid #667eea;
     }
-    
-    .stat-card.verde {
-      border-left-color: #00C851;
-    }
-    
-    .stat-card.amarelo {
-      border-left-color: #ffbb33;
-    }
-    
-    .stat-card.vermelho {
-      border-left-color: #ff4444;
-    }
-    
+
+    .stat-card.verde { border-top-color: #00C851; }
+    .stat-card.amarelo { border-top-color: #ffbb33; }
+    .stat-card.vermelho { border-top-color: #ff4444; }
+
     .stat-label {
-      color: #666;
-      font-size: 1.9rem;
-      margin-bottom: 8px;
+      color: #888;
+      font-size: 0.62rem;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    
-    .stat-value {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: #333;
-    }
-    
-    /* ==================== GRID DE BATERIAS ==================== */
-    
-    .section-title {
-      font-size: 2.5rem;
-      color: #333;
-      margin-bottom: 20px;
+      letter-spacing: 0.3px;
       font-weight: 600;
+      margin-bottom: 2px;
     }
-    
-    .baterias-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
+
+    .stat-value {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #333;
     }
-    
-    .bateria-card {
+
+    /* ==================== NAVEGAÇÃO POR ABAS ==================== */
+
+    .tab-nav {
+      display: flex;
       background: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin: 8px;
+      border-radius: 10px;
+      padding: 4px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 56px;
+      z-index: 150;
+      gap: 3px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 2px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #888;
       cursor: pointer;
       touch-action: manipulation;
+      min-height: 44px;
+      transition: background 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .tab-btn.active {
+      background: #667eea;
+      color: white;
+      box-shadow: 0 2px 6px rgba(102,126,234,0.35);
+    }
+
+    .tab-btn:active {
+      transform: scale(0.95);
+    }
+
+    .tab-icon {
+      font-size: 0.95rem;
+    }
+
+    /* ==================== CONTEÚDO DAS ABAS ==================== */
+
+    .tab-content {
+      display: none;
+      padding: 4px 8px 8px;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .section-title {
+      font-size: 0.9rem;
+      color: #555;
+      margin: 12px 0 8px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .section-icon {
+      font-size: 1.05rem;
+    }
+
+    .empty-state {
+      color: #999;
+      text-align: center;
+      padding: 30px 16px;
+      font-size: 0.85rem;
+    }
+
+    /* ==================== CARDS DE BATERIA ==================== */
+
+    .cards-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bateria-card {
+      background: white;
+      border-radius: 10px;
+      padding: 14px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.06);
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: transform 0.1s;
     }
 
     .bateria-card:active {
-      opacity: 0.85;
+      transform: scale(0.98);
+      opacity: 0.9;
     }
-    
+
     .bateria-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
-    
+
     .bateria-codigo {
-      font-size: 2.3rem;
-      font-weight: bold;
+      font-size: 1rem;
+      font-weight: 800;
       color: #333;
     }
-    
+
     .bateria-status {
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 1.85rem;
-      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 700;
     }
-    
+
     .status-em-uso {
       background: #d4edda;
       color: #155724;
     }
-    
+
     .status-em-carga {
       background: #fff3cd;
       color: #856404;
     }
-    
+
     .bateria-info {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 0;
     }
-    
+
     .info-linha {
       display: flex;
       justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid #f0f0f0;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid #f5f5f5;
     }
-    
+
     .info-linha:last-child {
       border-bottom: none;
     }
-    
+
     .info-label {
-      color: #666;
-      font-size: 1.9rem;
+      color: #888;
+      font-size: 0.78rem;
     }
-    
+
     .info-valor {
       font-weight: 600;
       color: #333;
+      font-size: 0.82rem;
     }
-    
+
     /* ==================== BARRA DE PROGRESSO ==================== */
-    
+
     .progresso-container {
-      margin-top: 15px;
+      margin-top: 10px;
     }
-    
+
     .progresso-label {
-      font-size: 1.85rem;
-      color: #666;
-      margin-bottom: 8px;
+      font-size: 0.72rem;
+      color: #888;
+      margin-bottom: 6px;
       display: flex;
       justify-content: space-between;
     }
-    
+
+    .progresso-label strong {
+      color: #333;
+    }
+
     .progresso-barra {
-      height: 10px;
-      background: #e0e0e0;
-      border-radius: 10px;
+      height: 8px;
+      background: #e8e8e8;
+      border-radius: 8px;
       overflow: hidden;
     }
-    
+
     .progresso-preenchimento {
       height: 100%;
-      transition: width 0.3s;
-      border-radius: 10px;
+      transition: width 0.5s ease;
+      border-radius: 8px;
     }
-    
+
     .progresso-vermelho {
-      background: linear-gradient(90deg, #ff4444 0%, #cc0000 100%);
+      background: linear-gradient(90deg, #ff4444, #cc0000);
     }
-    
+
     .progresso-amarelo {
-      background: linear-gradient(90deg, #ffbb33 0%, #ff8800 100%);
+      background: linear-gradient(90deg, #ffbb33, #ff8800);
     }
-    
+
     .progresso-verde {
-      background: linear-gradient(90deg, #00C851 0%, #007E33 100%);
+      background: linear-gradient(90deg, #00C851, #007E33);
     }
-    
+
     /* ==================== NÍVEL DE ÁGUA ==================== */
-    
+
     .nivel-agua-badge {
       display: inline-block;
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 1.8rem;
-      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      font-weight: 700;
     }
-    
+
     .nivel-ok {
       background: #d4edda;
       color: #155724;
     }
-    
+
     .nivel-atencao {
       background: #fff3cd;
       color: #856404;
     }
-    
+
     .nivel-critico {
       background: #f8d7da;
       color: #721c24;
     }
-    
+
+    /* ==================== CARDS DE EQUIPAMENTO ==================== */
+
+    .equip-card {
+      background: white;
+      border-radius: 10px;
+      padding: 14px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.06);
+      border-left: 4px solid #667eea;
+    }
+
+    .equip-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .equip-codigo {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #333;
+    }
+
+    .equip-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .status-ativa {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-parada {
+      background: #e9ecef;
+      color: #6c757d;
+    }
+
+    /* ==================== CARDS DE EQUIPE ==================== */
+
+    .equipe-card {
+      background: white;
+      border-radius: 10px;
+      padding: 14px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.06);
+    }
+
+    .equipe-header {
+      margin-bottom: 10px;
+    }
+
+    .equipe-nome {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .equipe-stats {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .equipe-stat {
+      flex: 1;
+      text-align: center;
+      background: #f8f9fa;
+      padding: 8px 4px;
+      border-radius: 8px;
+    }
+
+    .equipe-stat-valor {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #667eea;
+    }
+
+    .equipe-stat-label {
+      font-size: 0.62rem;
+      color: #888;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .equipe-ultima {
+      font-size: 0.72rem;
+      color: #aaa;
+      padding-top: 8px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    /* ==================== TIMELINE DE ATIVIDADE ==================== */
+
+    .timeline-item {
+      background: white;
+      border-radius: 10px;
+      padding: 12px 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      border-left: 3px solid #667eea;
+    }
+
+    .timeline-hora {
+      font-size: 0.7rem;
+      color: #667eea;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .timeline-resumo {
+      font-size: 0.85rem;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .timeline-detalhe {
+      font-size: 0.75rem;
+      color: #888;
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .timeline-sep {
+      color: #ddd;
+    }
+
     /* ==================== LOADING ==================== */
-    
+
     .loading {
       text-align: center;
-      padding: 50px;
+      padding: 40px 20px;
     }
-    
+
     .spinner {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #667eea;
+      border: 3px solid #f0f0f0;
+      border-top: 3px solid #667eea;
       border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 20px;
+      width: 36px;
+      height: 36px;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 14px;
     }
-    
+
+    .loading p {
+      color: #999;
+      font-size: 0.82rem;
+    }
+
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    
+
     /* ==================== MODAL ==================== */
-    
+
     .modal {
       display: none;
       position: fixed;
@@ -303,245 +584,254 @@
       height: 100%;
       background: rgba(0,0,0,0.5);
       z-index: 1000;
-      align-items: center;
+      align-items: flex-end;
       justify-content: center;
     }
-    
+
     .modal.ativo {
       display: flex;
     }
-    
+
     .modal-conteudo {
       background: white;
-      border-radius: 15px;
-      padding: 30px;
-      max-width: 80vh;
-      width: 90%;
-      max-height: 80vh;
+      border-radius: 16px 16px 0 0;
+      padding: 20px 16px;
+      width: 100%;
+      max-height: 85vh;
       overflow-y: auto;
-      position: relative;
+      -webkit-overflow-scrolling: touch;
+      animation: slideUp 0.25s ease;
     }
-    
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
       border-bottom: 2px solid #f0f0f0;
     }
-    
+
     .modal-titulo {
-      font-size: 2.5rem;
-      font-weight: bold;
+      font-size: 1rem;
+      font-weight: 700;
       color: #333;
     }
-    
+
     .modal-fechar {
-      background: none;
+      background: #f0f0f0;
       border: none;
-      font-size: 2rem;
-      color: #999;
+      font-size: 1.1rem;
+      color: #666;
       cursor: pointer;
-      width: 44px;
-      height: 44px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       touch-action: manipulation;
+      min-height: 44px;
+      min-width: 44px;
     }
 
     .modal-fechar:active {
-      color: #993;
+      background: #ddd;
     }
-    
+
     .historico-item {
       background: #f8f9fa;
-      padding: 15px;
+      padding: 12px;
       border-radius: 8px;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
       border-left: 3px solid #667eea;
     }
-    
+
     .historico-data {
-      font-weight: bold;
+      font-weight: 700;
       color: #667eea;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
+      font-size: 0.82rem;
     }
-    
+
     .historico-detalhe {
       display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 8px;
-      font-size: 2.0rem;
+      grid-template-columns: auto 1fr;
+      gap: 4px 10px;
+      font-size: 0.78rem;
     }
-    
+
     .detalhe-label {
-      color: #666;
+      color: #888;
     }
-    
+
     .detalhe-valor {
       font-weight: 600;
       color: #333;
     }
-    
-    /* ==================== RESPONSIVIDADE ==================== */
-    
-    @media (max-width: 768px) {
-      body {
-        padding: 10px;
-      }
 
-      .header h1 {
-        font-size: 2.5rem;
-      }
+    /* ==================== TABELA DO RELATÓRIO ==================== */
 
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .baterias-grid {
-        grid-template-columns: 1fr;
-      }
+    .relatorio-tabela {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
     }
 
-    /* ==================== MC2200 portrait (480px) ==================== */
+    .relatorio-tabela thead tr {
+      background: #667eea;
+      color: white;
+    }
 
-    @media (max-width: 480px) {
-      body {
-        padding: 8px;
-      }
+    .relatorio-tabela th,
+    .relatorio-tabela td {
+      padding: 10px 6px;
+      text-align: center;
+    }
 
-      .header {
-        padding: 18px;
-        margin-bottom: 18px;
-        border-radius: 12px;
-      }
+    .relatorio-tabela th {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
 
-      .header h1 {
-        font-size: 2.25rem;
-        margin-bottom: 6px;
-      }
+    .relatorio-tabela td {
+      font-size: 0.78rem;
+    }
 
-      .header p {
-        font-size: 1.9rem;
-      }
+    .relatorio-tabela td:first-child {
+      font-weight: 700;
+      text-align: left;
+    }
 
-      .header-actions {
-        gap: 8px;
-        margin-top: 14px;
-      }
+    .relatorio-tabela tbody tr:nth-child(even) {
+      background: #f8f9fa;
+    }
 
-      .btn {
-        padding: 10px 16px;
-        font-size: 1.88rem;
-      }
-
-      .stat-card {
-        padding: 16px;
-      }
-
-      .stat-value {
-        font-size: 2rem;
-      }
-
-      .section-title {
-        font-size: 1.15rem;
-        margin-bottom: 12px;
-      }
-
-      .bateria-card {
-        padding: 14px;
-      }
-
-      .bateria-codigo {
-        font-size: 1.1rem;
-      }
-
-      .modal-conteudo {
-        width: 96%;
-        padding: 18px;
-        border-radius: 12px;
-      }
-
-      .modal-titulo {
-        font-size: 1.15rem;
-      }
-
-      .historico-detalhe {
-        font-size: 1.85rem;
-      }
+    .relatorio-tabela .media-valor {
+      font-weight: 700;
+      color: #667eea;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    
-    <!-- Cabeçalho -->
+
+    <!-- HEADER COMPACTO -->
     <div class="header">
-      <h1>📊 Painel de Controle - Baterias</h1>
-      <div class="header-actions">
-        <button class="btn btn-white" onclick="carregarDados()">
-          Atualizar
-        </button>
-        <button class="btn btn-white" onclick="abrirRelatorio()">
-          Desempenho
-        </button>
-        <a href="?" class="btn btn-white" style="text-decoration: none; display: inline-block;">
-          Voltar
-        </a>
+      <h1>Painel de Controle</h1>
+      <div class="header-buttons">
+        <button class="btn btn-white" onclick="carregarDados()">Atualizar</button>
+        <button class="btn btn-white" onclick="abrirRelatorio()">Relatorio</button>
+        <a href="?" class="btn btn-white">Voltar</a>
       </div>
     </div>
-    
-    <!-- Estatísticas -->
+
+    <!-- BANNER DE ALERTAS -->
+    <div id="alertasBanner" class="alertas-banner">
+      <div class="alertas-conteudo" id="alertasConteudo"></div>
+      <button class="alertas-fechar" onclick="fecharAlertas()">&#10005;</button>
+    </div>
+
+    <!-- ESTATÍSTICAS -->
     <div class="stats-grid" id="estatisticas">
-      <!-- Será preenchido dinamicamente -->
+      <!-- Preenchido dinamicamente -->
     </div>
-    
-    <!-- Baterias em Carga -->
-    <h2 class="section-title">⚡ Baterias em Carregamento</h2>
-    <div class="baterias-grid" id="bateriasEmCarga">
-      <div class="loading">
-        <div class="spinner"></div>
-        <p>Carregando dados...</p>
+
+    <!-- NAVEGAÇÃO POR ABAS -->
+    <div class="tab-nav" id="tabNav">
+      <button class="tab-btn active" data-tab="baterias" onclick="trocarTab('baterias')">
+        <span class="tab-icon">&#9889;</span> Baterias
+      </button>
+      <button class="tab-btn" data-tab="equipamentos" onclick="trocarTab('equipamentos')">
+        <span class="tab-icon">&#128642;</span> Equip.
+      </button>
+      <button class="tab-btn" data-tab="equipe" onclick="trocarTab('equipe')">
+        <span class="tab-icon">&#128101;</span> Equipe
+      </button>
+      <button class="tab-btn" data-tab="atividade" onclick="trocarTab('atividade')">
+        <span class="tab-icon">&#128340;</span> Recente
+      </button>
+    </div>
+
+    <!-- ABA: BATERIAS -->
+    <div class="tab-content active" id="tab-baterias">
+      <h2 class="section-title"><span class="section-icon">&#9889;</span> Em Carregamento</h2>
+      <div class="cards-list" id="bateriasEmCarga">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Carregando dados...</p>
+        </div>
+      </div>
+
+      <h2 class="section-title"><span class="section-icon">&#128295;</span> Em Uso</h2>
+      <div class="cards-list" id="bateriasEmUso">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Carregando dados...</p>
+        </div>
       </div>
     </div>
-    
-    <!-- Baterias em Uso -->
-    <h2 class="section-title">🔧 Baterias em Uso</h2>
-    <div class="baterias-grid" id="bateriasEmUso">
-      <div class="loading">
-        <div class="spinner"></div>
-        <p>Carregando dados...</p>
+
+    <!-- ABA: EQUIPAMENTOS -->
+    <div class="tab-content" id="tab-equipamentos">
+      <h2 class="section-title"><span class="section-icon">&#128642;</span> Empilhadeiras</h2>
+      <div class="cards-list" id="equipamentosLista">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Carregando dados...</p>
+        </div>
       </div>
     </div>
-    
+
+    <!-- ABA: EQUIPE -->
+    <div class="tab-content" id="tab-equipe">
+      <h2 class="section-title"><span class="section-icon">&#128101;</span> Equipe</h2>
+      <div class="cards-list" id="equipeLista">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Carregando dados...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABA: ATIVIDADE RECENTE -->
+    <div class="tab-content" id="tab-atividade">
+      <h2 class="section-title"><span class="section-icon">&#128340;</span> Atividade Recente</h2>
+      <div class="cards-list" id="atividadeLista">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Carregando dados...</p>
+        </div>
+      </div>
+    </div>
+
   </div>
-  
-  <!-- Modal de Histórico -->
+
+  <!-- MODAL -->
   <div id="modalHistorico" class="modal">
     <div class="modal-conteudo">
       <div class="modal-header">
-        <h3 class="modal-titulo" id="modalTitulo">Histórico da Bateria</h3>
-        <button class="modal-fechar" onclick="fecharModal()">×</button>
+        <h3 class="modal-titulo" id="modalTitulo">Historico da Bateria</h3>
+        <button class="modal-fechar" onclick="fecharModal()">&#10005;</button>
       </div>
-      <div id="modalBody">
-        <!-- Conteúdo do modal -->
-      </div>
+      <div id="modalBody"></div>
     </div>
   </div>
-  
+
   <script>
     // ==================== VARIÁVEIS GLOBAIS ====================
-    
-    let dadosPainel = null;
-    let intervaloAtualizacao = null;
-    
+
+    var dadosPainel = null;
+    var intervaloAtualizacao = null;
+
     // ==================== CARREGAMENTO DE DADOS ====================
-    
-    /**
-     * Carrega dados do painel
-     */
+
     function carregarDados() {
       google.script.run
         .withSuccessHandler(function(resultado) {
@@ -553,90 +843,159 @@
           }
         })
         .withFailureHandler(function(erro) {
-          console.error('Erro na requisição:', erro);
+          console.error('Erro na requisicao:', erro);
         })
         .obterDadosPainel();
     }
-    
-    /**
-     * Renderiza todo o painel
-     */
+
+    // ==================== RENDERIZAÇÃO PRINCIPAL ====================
+
     function renderizarPainel() {
+      renderizarAlertas();
       renderizarEstatisticas();
       renderizarBaterias();
+      renderizarEquipamentos();
+      renderizarEquipe();
+      renderizarAtividade();
     }
-    
-    /**
-     * Renderiza estatísticas gerais
-     */
+
+    // ==================== ALERTAS ====================
+
+    function renderizarAlertas() {
+      var alertas = dadosPainel.alertas;
+      var itens = [];
+
+      for (var i = 0; i < alertas.aguaCritica.length; i++) {
+        itens.push('Agua CRITICO: ' + alertas.aguaCritica[i].codigo +
+          ' (' + alertas.aguaCritica[i].localizacao + ')');
+      }
+
+      for (var j = 0; j < alertas.cargaExcessiva.length; j++) {
+        itens.push(alertas.cargaExcessiva[j].codigo +
+          ' em carga ha ' + alertas.cargaExcessiva[j].tempoDecorrido + 'h');
+      }
+
+      var banner = document.getElementById('alertasBanner');
+      if (itens.length > 0) {
+        var html = '';
+        for (var k = 0; k < itens.length; k++) {
+          html += '<div class="alerta-item">' + itens[k] + '</div>';
+        }
+        document.getElementById('alertasConteudo').innerHTML = html;
+        banner.classList.add('visivel');
+      } else {
+        banner.classList.remove('visivel');
+      }
+    }
+
+    function fecharAlertas() {
+      document.getElementById('alertasBanner').classList.remove('visivel');
+    }
+
+    // ==================== ESTATÍSTICAS ====================
+
     function renderizarEstatisticas() {
-      const baterias = dadosPainel.baterias;
-      
-      const emCarga = baterias.filter(b => b.status === 'Em Carga').length;
-      const emUso = baterias.filter(b => b.status === 'Em Uso').length;
-      const html = `
-        <div class="stat-card">
-          <div class="stat-label">Total</div>
-          <div class="stat-value">${baterias.length}</div>
-        </div>
-        <div class="stat-card amarelo">
-          <div class="stat-label">Carregando</div>
-          <div class="stat-value">${emCarga}</div>
-        </div>
-        <div class="stat-card verde">
-          <div class="stat-label">Em Uso</div>
-          <div class="stat-value">${emUso}</div>
-        </div>
-      `;
-      
+      var baterias = dadosPainel.baterias;
+      var extras = dadosPainel.estatisticasExtras;
+
+      var emCarga = 0;
+      var emUso = 0;
+      for (var i = 0; i < baterias.length; i++) {
+        if (baterias[i].status === 'Em Carga') emCarga++;
+        if (baterias[i].status === 'Em Uso') emUso++;
+      }
+
+      var html =
+        '<div class="stat-card">' +
+          '<div class="stat-label">Total Bat.</div>' +
+          '<div class="stat-value">' + baterias.length + '</div>' +
+        '</div>' +
+        '<div class="stat-card amarelo">' +
+          '<div class="stat-label">Carregando</div>' +
+          '<div class="stat-value">' + emCarga + '</div>' +
+        '</div>' +
+        '<div class="stat-card verde">' +
+          '<div class="stat-label">Em Uso</div>' +
+          '<div class="stat-value">' + emUso + '</div>' +
+        '</div>' +
+        '<div class="stat-card' + (extras.alertasAgua > 0 ? ' vermelho' : '') + '">' +
+          '<div class="stat-label">Alertas Agua</div>' +
+          '<div class="stat-value">' + extras.alertasAgua + '</div>' +
+        '</div>' +
+        '<div class="stat-card">' +
+          '<div class="stat-label">Trocas Sem.</div>' +
+          '<div class="stat-value">' + extras.trocasSemana + '</div>' +
+        '</div>' +
+        '<div class="stat-card verde">' +
+          '<div class="stat-label">Emp. Ativas</div>' +
+          '<div class="stat-value">' + extras.empilhadeirasAtivas + '</div>' +
+        '</div>';
+
       document.getElementById('estatisticas').innerHTML = html;
     }
-    
-    /**
-     * Renderiza cards de baterias
-     */
+
+    // ==================== ABAS ====================
+
+    function trocarTab(tabId) {
+      var contents = document.querySelectorAll('.tab-content');
+      for (var i = 0; i < contents.length; i++) {
+        contents[i].classList.remove('active');
+      }
+      var btns = document.querySelectorAll('.tab-btn');
+      for (var j = 0; j < btns.length; j++) {
+        btns[j].classList.remove('active');
+      }
+      document.getElementById('tab-' + tabId).classList.add('active');
+      var activeBtn = document.querySelector('.tab-btn[data-tab="' + tabId + '"]');
+      if (activeBtn) activeBtn.classList.add('active');
+    }
+
+    // ==================== BATERIAS ====================
+
     function renderizarBaterias() {
-      const baterias = dadosPainel.baterias;
-      
-      const bateriasEmCarga = baterias.filter(b => b.status === 'Em Carga');
-      const bateriasEmUso = baterias.filter(b => b.status === 'Em Uso');
-      
-      // Renderizar baterias em carga
-      let htmlCarga = '';
+      var baterias = dadosPainel.baterias;
+      var bateriasEmCarga = [];
+      var bateriasEmUso = [];
+
+      for (var i = 0; i < baterias.length; i++) {
+        if (baterias[i].status === 'Em Carga') {
+          bateriasEmCarga.push(baterias[i]);
+        } else {
+          bateriasEmUso.push(baterias[i]);
+        }
+      }
+
+      var htmlCarga = '';
       if (bateriasEmCarga.length === 0) {
-        htmlCarga = '<p style="color: #666; padding: 20px;">Nenhuma bateria em carregamento no momento.</p>';
+        htmlCarga = '<p class="empty-state">Nenhuma bateria em carregamento.</p>';
       } else {
-        bateriasEmCarga.forEach(bateria => {
-          htmlCarga += gerarCardBateria(bateria, 'carga');
-        });
+        for (var j = 0; j < bateriasEmCarga.length; j++) {
+          htmlCarga += gerarCardBateria(bateriasEmCarga[j], 'carga');
+        }
       }
       document.getElementById('bateriasEmCarga').innerHTML = htmlCarga;
-      
-      // Renderizar baterias em uso
-      let htmlUso = '';
+
+      var htmlUso = '';
       if (bateriasEmUso.length === 0) {
-        htmlUso = '<p style="color: #666; padding: 20px;">Nenhuma bateria em uso no momento.</p>';
+        htmlUso = '<p class="empty-state">Nenhuma bateria em uso.</p>';
       } else {
-        bateriasEmUso.forEach(bateria => {
-          htmlUso += gerarCardBateria(bateria, 'uso');
-        });
+        for (var k = 0; k < bateriasEmUso.length; k++) {
+          htmlUso += gerarCardBateria(bateriasEmUso[k], 'uso');
+        }
       }
       document.getElementById('bateriasEmUso').innerHTML = htmlUso;
     }
-    
-    /**
-     * Gera HTML de um card de bateria
-     */
+
     function gerarCardBateria(bateria, tipo) {
-      const tempoDecorrido = parseFloat(bateria.tempoDecorrido);
-      
-      let corProgresso = '';
-      let porcentagem = 0;
-      let labelTempo = '';
-      
+      var tempoDecorrido = parseFloat(bateria.tempoDecorrido);
+
+      var corProgresso = '';
+      var porcentagem = 0;
+      var labelTempo = '';
+
       if (tipo === 'carga') {
         porcentagem = Math.min((tempoDecorrido / dadosPainel.tempoCargaCompleta) * 100, 100);
-        
+
         if (tempoDecorrido < dadosPainel.tempoAlertaAmarelo) {
           corProgresso = 'progresso-vermelho';
         } else if (tempoDecorrido < dadosPainel.tempoCargaCompleta) {
@@ -644,258 +1003,346 @@
         } else {
           corProgresso = 'progresso-verde';
         }
-        
-        const tempoRestante = Math.max(dadosPainel.tempoCargaCompleta - tempoDecorrido, 0);
-        labelTempo = tempoRestante > 0 ? 
-          `Faltam ${tempoRestante.toFixed(1)}h` : 
-          'Carga Completa!';
+
+        var tempoRestante = Math.max(dadosPainel.tempoCargaCompleta - tempoDecorrido, 0);
+        labelTempo = tempoRestante > 0 ?
+          'Faltam <strong>' + tempoRestante.toFixed(1) + 'h</strong>' :
+          '<strong style="color:#00C851">Carga Completa!</strong>';
       } else {
-        // Para baterias em uso, mostra horimetro de quando foi instalada
         labelTempo = bateria.horimetroInstalacao !== '' ?
-          `Instalado no horimetro: ${bateria.horimetroInstalacao}h` :
-          'Horimetro não registrado';
+          'Horim. instalacao: <strong>' + bateria.horimetroInstalacao + 'h</strong>' :
+          'Horimetro nao registrado';
       }
-      
-      const classNivelAgua = bateria.nivelAgua === 'OK' ? 'nivel-ok' : 
-                             bateria.nivelAgua === 'ATENÇÃO' ? 'nivel-atencao' : 
-                             'nivel-critico';
-      
-      return `
-        <div class="bateria-card" onclick="abrirHistorico('${bateria.codigo}')">
-          <div class="bateria-header">
-            <div class="bateria-codigo">${bateria.codigo}</div>
-            <div class="bateria-status ${tipo === 'carga' ? 'status-em-carga' : 'status-em-uso'}">
-              ${bateria.status}
-            </div>
-          </div>
-          
-          <div class="bateria-info">
-            <div class="info-linha">
-              <span class="info-label">Localização:</span>
-              <span class="info-valor">${bateria.localizacao}</span>
-            </div>
-            <div class="info-linha">
-              <span class="info-label">Nível de Água:</span>
-              <span class="nivel-agua-badge ${classNivelAgua}">${bateria.nivelAgua}</span>
-            </div>
-            <div class="info-linha">
-              <span class="info-label">Total de Usos:</span>
-              <span class="info-valor">${bateria.totalUsos}</span>
-            </div>
-            <div class="info-linha">
-              <span class="info-label">Média de Duração:</span>
-              <span class="info-valor">${bateria.mediaDuracao}h</span>
-            </div>
-          </div>
-          
-          ${tipo === 'carga' ? `
-          <div class="progresso-container">
-            <div class="progresso-label">
-              <span>${tempoDecorrido.toFixed(1)}h / ${dadosPainel.tempoCargaCompleta}h</span>
-              <span>${labelTempo}</span>
-            </div>
-            <div class="progresso-barra">
-              <div class="progresso-preenchimento ${corProgresso}" style="width: ${porcentagem}%"></div>
-            </div>
-          </div>
-          ` : `
-          <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #f0f0f0;">
-            <div class="info-label" style="text-align: center;">${labelTempo}</div>
-          </div>
-          `}
-        </div>
-      `;
+
+      var classNivelAgua = bateria.nivelAgua === 'OK' ? 'nivel-ok' :
+                           bateria.nivelAgua === 'ATENÇÃO' ? 'nivel-atencao' :
+                           'nivel-critico';
+
+      var html =
+        '<div class="bateria-card" onclick="abrirHistorico(\'' + bateria.codigo + '\')">' +
+          '<div class="bateria-header">' +
+            '<div class="bateria-codigo">' + bateria.codigo + '</div>' +
+            '<div class="bateria-status ' + (tipo === 'carga' ? 'status-em-carga' : 'status-em-uso') + '">' +
+              bateria.status +
+            '</div>' +
+          '</div>' +
+          '<div class="bateria-info">' +
+            '<div class="info-linha">' +
+              '<span class="info-label">Local:</span>' +
+              '<span class="info-valor">' + bateria.localizacao + '</span>' +
+            '</div>' +
+            '<div class="info-linha">' +
+              '<span class="info-label">Agua:</span>' +
+              '<span class="nivel-agua-badge ' + classNivelAgua + '">' + bateria.nivelAgua + '</span>' +
+            '</div>' +
+            '<div class="info-linha">' +
+              '<span class="info-label">Usos / Media:</span>' +
+              '<span class="info-valor">' + bateria.totalUsos + 'x / ' + bateria.mediaDuracao + 'h</span>' +
+            '</div>' +
+          '</div>';
+
+      if (tipo === 'carga') {
+        html +=
+          '<div class="progresso-container">' +
+            '<div class="progresso-label">' +
+              '<span>' + tempoDecorrido.toFixed(1) + 'h / ' + dadosPainel.tempoCargaCompleta + 'h</span>' +
+              '<span>' + labelTempo + '</span>' +
+            '</div>' +
+            '<div class="progresso-barra">' +
+              '<div class="progresso-preenchimento ' + corProgresso + '" style="width:' + porcentagem + '%"></div>' +
+            '</div>' +
+          '</div>';
+      } else {
+        html +=
+          '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0;">' +
+            '<div class="info-label" style="text-align:center;font-size:0.75rem;">' + labelTempo + '</div>' +
+          '</div>';
+      }
+
+      html += '</div>';
+      return html;
     }
-    
+
+    // ==================== EQUIPAMENTOS ====================
+
+    function renderizarEquipamentos() {
+      var equipamentos = dadosPainel.equipamentos;
+      var html = '';
+
+      if (!equipamentos || equipamentos.length === 0) {
+        html = '<p class="empty-state">Nenhuma empilhadeira cadastrada.</p>';
+      } else {
+        for (var i = 0; i < equipamentos.length; i++) {
+          var equip = equipamentos[i];
+          var ativa = equip.bateriaAtual && equip.bateriaAtual !== '';
+
+          html +=
+            '<div class="equip-card">' +
+              '<div class="equip-header">' +
+                '<div class="equip-codigo">' + equip.codigo + '</div>' +
+                '<span class="equip-badge ' + (ativa ? 'status-ativa' : 'status-parada') + '">' +
+                  (ativa ? 'Ativa' : 'Parada') +
+                '</span>' +
+              '</div>' +
+              '<div class="bateria-info">' +
+                '<div class="info-linha">' +
+                  '<span class="info-label">Bateria:</span>' +
+                  '<span class="info-valor">' + (ativa ? equip.bateriaAtual : '---') + '</span>' +
+                '</div>' +
+                '<div class="info-linha">' +
+                  '<span class="info-label">Ultima troca:</span>' +
+                  '<span class="info-valor">' + (equip.ultimaTroca || '---') + '</span>' +
+                '</div>' +
+                '<div class="info-linha">' +
+                  '<span class="info-label">Horimetro:</span>' +
+                  '<span class="info-valor">' + (equip.ultimoHorimetro ? equip.ultimoHorimetro + 'h' : '---') + '</span>' +
+                '</div>' +
+                '<div class="info-linha">' +
+                  '<span class="info-label">Operador:</span>' +
+                  '<span class="info-valor">' + (equip.ultimoOperador || '---') + '</span>' +
+                '</div>' +
+              '</div>' +
+            '</div>';
+        }
+      }
+
+      document.getElementById('equipamentosLista').innerHTML = html;
+    }
+
+    // ==================== EQUIPE ====================
+
+    function renderizarEquipe() {
+      var equipe = dadosPainel.equipe;
+      var html = '';
+
+      if (!equipe || equipe.length === 0) {
+        html = '<p class="empty-state">Nenhum funcionario cadastrado.</p>';
+      } else {
+        for (var i = 0; i < equipe.length; i++) {
+          var membro = equipe[i];
+          html +=
+            '<div class="equipe-card">' +
+              '<div class="equipe-header">' +
+                '<div class="equipe-nome">' + membro.codigo + ' - ' + membro.nome + '</div>' +
+              '</div>' +
+              '<div class="equipe-stats">' +
+                '<div class="equipe-stat">' +
+                  '<div class="equipe-stat-valor">' + membro.trocasSemana + '</div>' +
+                  '<div class="equipe-stat-label">Semana</div>' +
+                '</div>' +
+                '<div class="equipe-stat">' +
+                  '<div class="equipe-stat-valor">' + membro.trocasTotal + '</div>' +
+                  '<div class="equipe-stat-label">Total</div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="equipe-ultima">' +
+                'Ultima atividade: ' + (membro.ultimaAtividade || 'Sem registro') +
+              '</div>' +
+            '</div>';
+        }
+      }
+
+      document.getElementById('equipeLista').innerHTML = html;
+    }
+
+    // ==================== ATIVIDADE RECENTE ====================
+
+    function renderizarAtividade() {
+      var atividade = dadosPainel.atividadeRecente;
+      var html = '';
+
+      if (!atividade || atividade.length === 0) {
+        html = '<p class="empty-state">Nenhuma atividade registrada.</p>';
+      } else {
+        for (var i = 0; i < atividade.length; i++) {
+          var item = atividade[i];
+          var nivelClass = item.nivelAgua === 'OK' ? 'nivel-ok' :
+                           item.nivelAgua === 'ATENÇÃO' ? 'nivel-atencao' : 'nivel-critico';
+
+          html +=
+            '<div class="timeline-item">' +
+              '<div class="timeline-hora">' + item.dataHora + '</div>' +
+              '<div class="timeline-resumo">' +
+                item.funcionario + ' trocou em ' + item.empilhadeira +
+              '</div>' +
+              '<div class="timeline-detalhe">' +
+                'Instalou: ' + item.bateriaInstalada +
+                ' <span class="timeline-sep">|</span> ' +
+                'Removeu: ' + item.bateriaRemovida +
+              '</div>' +
+              '<div class="timeline-detalhe">' +
+                '<span class="nivel-agua-badge ' + nivelClass + '">' + item.nivelAgua + '</span>' +
+                (item.duracao !== 'N/A' ?
+                  ' <span class="timeline-sep">|</span> Duracao: ' + item.duracao + 'h' : '') +
+              '</div>' +
+            '</div>';
+        }
+      }
+
+      document.getElementById('atividadeLista').innerHTML = html;
+    }
+
     // ==================== MODAL DE HISTÓRICO ====================
-    
-    /**
-     * Abre modal com histórico da bateria
-     */
+
     function abrirHistorico(codigoBateria) {
-      document.getElementById('modalTitulo').textContent = 
-        'Histórico - ' + codigoBateria;
-      
-      document.getElementById('modalBody').innerHTML = `
-        <div class="loading">
-          <div class="spinner"></div>
-          <p>Carregando histórico...</p>
-        </div>
-      `;
-      
+      document.getElementById('modalTitulo').textContent =
+        'Historico - ' + codigoBateria;
+
+      document.getElementById('modalBody').innerHTML =
+        '<div class="loading">' +
+          '<div class="spinner"></div>' +
+          '<p>Carregando historico...</p>' +
+        '</div>';
+
       document.getElementById('modalHistorico').classList.add('ativo');
-      
+
       google.script.run
         .withSuccessHandler(function(resultado) {
           if (resultado.sucesso) {
             renderizarHistorico(resultado.historico);
           } else {
-            document.getElementById('modalBody').innerHTML = 
-              '<p style="color: #ff4444; text-align: center;">Erro ao carregar histórico</p>';
+            document.getElementById('modalBody').innerHTML =
+              '<p style="color:#ff4444;text-align:center;">Erro ao carregar historico</p>';
           }
         })
         .withFailureHandler(function(erro) {
-          document.getElementById('modalBody').innerHTML = 
-            '<p style="color: #ff4444; text-align: center;">Erro: ' + erro.message + '</p>';
+          document.getElementById('modalBody').innerHTML =
+            '<p style="color:#ff4444;text-align:center;">Erro: ' + erro.message + '</p>';
         })
         .obterHistoricoBateria(codigoBateria);
     }
-    
-    /**
-     * Renderiza o histórico no modal
-     */
+
     function renderizarHistorico(historico) {
       if (historico.length === 0) {
-        document.getElementById('modalBody').innerHTML = 
-          '<p style="color: #666; text-align: center; padding: 20px;">Nenhum registro encontrado</p>';
+        document.getElementById('modalBody').innerHTML =
+          '<p class="empty-state">Nenhum registro encontrado</p>';
         return;
       }
-      
-      let html = '';
-      historico.forEach(registro => {
-        html += `
-          <div class="historico-item">
-            <div class="historico-data">${registro.dataHora}</div>
-            <div class="historico-detalhe">
-              <span class="detalhe-label">Funcionário:</span>
-              <span class="detalhe-valor">${registro.funcionario}</span>
-              
-              <span class="detalhe-label">Empilhadeira:</span>
-              <span class="detalhe-valor">${registro.empilhadeira}</span>
-              
-              <span class="detalhe-label">Ação:</span>
-              <span class="detalhe-valor">
-                ${registro.bateriaInstalada ? 'Instalada' : 'Removida'}
-              </span>
-              
-              <span class="detalhe-label">Nível Água:</span>
-              <span class="detalhe-valor">${registro.nivelAgua}</span>
 
-              ${registro.horimetro !== 'N/A' ? `
-              <span class="detalhe-label">Horimetro:</span>
-              <span class="detalhe-valor">${registro.horimetro}h</span>
-              ` : ''}
+      var html = '';
+      for (var i = 0; i < historico.length; i++) {
+        var registro = historico[i];
+        html +=
+          '<div class="historico-item">' +
+            '<div class="historico-data">' + registro.dataHora + '</div>' +
+            '<div class="historico-detalhe">' +
+              '<span class="detalhe-label">Funcionario:</span>' +
+              '<span class="detalhe-valor">' + registro.funcionario + '</span>' +
+              '<span class="detalhe-label">Empilhadeira:</span>' +
+              '<span class="detalhe-valor">' + registro.empilhadeira + '</span>' +
+              '<span class="detalhe-label">Acao:</span>' +
+              '<span class="detalhe-valor">' +
+                (registro.bateriaInstalada ? 'Instalada' : 'Removida') +
+              '</span>' +
+              '<span class="detalhe-label">Nivel Agua:</span>' +
+              '<span class="detalhe-valor">' + registro.nivelAgua + '</span>';
 
-              ${registro.duracaoUso !== 'N/A' ? `
-              <span class="detalhe-label">Duração (h máq):</span>
-              <span class="detalhe-valor">${registro.duracaoUso}h</span>
-              ` : ''}
-            </div>
-          </div>
-        `;
-      });
-      
+        if (registro.horimetro !== 'N/A') {
+          html +=
+              '<span class="detalhe-label">Horimetro:</span>' +
+              '<span class="detalhe-valor">' + registro.horimetro + 'h</span>';
+        }
+
+        if (registro.duracaoUso !== 'N/A') {
+          html +=
+              '<span class="detalhe-label">Duracao (h maq):</span>' +
+              '<span class="detalhe-valor">' + registro.duracaoUso + 'h</span>';
+        }
+
+        html +=
+            '</div>' +
+          '</div>';
+      }
+
       document.getElementById('modalBody').innerHTML = html;
     }
-    
-    /**
-     * Fecha o modal
-     */
+
     function fecharModal() {
       document.getElementById('modalHistorico').classList.remove('ativo');
     }
-    
+
     // Fechar modal ao clicar fora
     document.getElementById('modalHistorico').addEventListener('click', function(e) {
       if (e.target === this) {
         fecharModal();
       }
     });
-    
+
     // ==================== RELATÓRIO ====================
-    
-    /**
-     * Abre relatório de desempenho
-     */
+
     function abrirRelatorio() {
-      document.getElementById('modalTitulo').textContent = 
-        '📈 Relatório de Desempenho';
-      
-      document.getElementById('modalBody').innerHTML = `
-        <div class="loading">
-          <div class="spinner"></div>
-          <p>Gerando relatório...</p>
-        </div>
-      `;
-      
+      document.getElementById('modalTitulo').textContent = 'Relatorio de Desempenho';
+
+      document.getElementById('modalBody').innerHTML =
+        '<div class="loading">' +
+          '<div class="spinner"></div>' +
+          '<p>Gerando relatorio...</p>' +
+        '</div>';
+
       document.getElementById('modalHistorico').classList.add('ativo');
-      
+
       google.script.run
         .withSuccessHandler(function(resultado) {
           if (resultado.sucesso) {
             renderizarRelatorio(resultado.relatorio);
           } else {
-            document.getElementById('modalBody').innerHTML = 
-              '<p style="color: #ff4444; text-align: center;">Erro ao gerar relatório</p>';
+            document.getElementById('modalBody').innerHTML =
+              '<p style="color:#ff4444;text-align:center;">Erro ao gerar relatorio</p>';
           }
         })
         .withFailureHandler(function(erro) {
-          document.getElementById('modalBody').innerHTML = 
-            '<p style="color: #ff4444; text-align: center;">Erro: ' + erro.message + '</p>';
+          document.getElementById('modalBody').innerHTML =
+            '<p style="color:#ff4444;text-align:center;">Erro: ' + erro.message + '</p>';
         })
         .gerarRelatorioDesempenho();
     }
-    
-    /**
-     * Renderiza relatório de desempenho
-     */
+
     function renderizarRelatorio(relatorio) {
-      const relatorioOrdenado = [...relatorio].sort((a, b) =>
-        a.bateria.localeCompare(b.bateria, 'pt-BR', { numeric: true })
-      );
-      let html = '<div style="overflow-x: auto;">';
-      html += '<table style="width: 100%; border-collapse: collapse;">';
-      html += `
-        <thead>
-          <tr style="background: #667eea; color: white;">
-            <th style="padding: 12px; text-align: left; font-size: 1.8rem;">Bateria</th>
-            <th style="padding: 12px; text-align: center; font-size: 1.8rem;">Usos</th>
-            <th style="padding: 12px; text-align: center; font-size: 1.8rem;">Média (h máq)</th>
-            <th style="padding: 12px; text-align: center; font-size: 1.8rem;">Status</th>
-            <th style="padding: 12px; text-align: center; font-size: 1.8rem;">Água</th>
-          </tr>
-        </thead>
-        <tbody>
-      `;
-      
-      relatorioOrdenado.forEach((item, index) => {
-        const bgColor = index % 2 === 0 ? '#f8f9fa' : 'white';
-        html += `
-          <tr style="background: ${bgColor};">
-            <td style="padding: 12px; font-weight: 600; font-size: 1.8rem;">${item.bateria}</td>
-            <td style="padding: 12px; text-align: center; font-size: 1.8rem;">${item.totalUsos}</td>
-            <td style="padding: 12px; text-align: center; font-weight: 600; color: #667eea; font-size: 1.8rem;">
-              ${item.mediaDuracao}
-            </td>
-            <td style="padding: 12px; text-align: center; font-size: 1.8rem;">${item.statusAtual}</td>
-            <td style="padding: 12px; text-align: center; font-size: 1.8rem;">
-              <span class="nivel-agua-badge ${
-                item.ultimoNivelAgua === 'OK' ? 'nivel-ok' : 
-                item.ultimoNivelAgua === 'ATENÇÃO' ? 'nivel-atencao' : 
-                'nivel-critico'
-              }">
-                ${item.ultimoNivelAgua}
-              </span>
-            </td>
-          </tr>
-        `;
+      // Ordenar por nome da bateria
+      var relatorioOrdenado = relatorio.slice().sort(function(a, b) {
+        return a.bateria.localeCompare(b.bateria, 'pt-BR', { numeric: true });
       });
-      
+
+      var html = '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">';
+      html += '<table class="relatorio-tabela">';
+      html +=
+        '<thead><tr>' +
+          '<th>Bat.</th>' +
+          '<th>Usos</th>' +
+          '<th>Media</th>' +
+          '<th>Status</th>' +
+          '<th>Agua</th>' +
+        '</tr></thead><tbody>';
+
+      for (var i = 0; i < relatorioOrdenado.length; i++) {
+        var item = relatorioOrdenado[i];
+        var nivelClass = item.ultimoNivelAgua === 'OK' ? 'nivel-ok' :
+                         item.ultimoNivelAgua === 'ATENÇÃO' ? 'nivel-atencao' : 'nivel-critico';
+
+        html +=
+          '<tr>' +
+            '<td>' + item.bateria + '</td>' +
+            '<td>' + item.totalUsos + '</td>' +
+            '<td class="media-valor">' + item.mediaDuracao + 'h</td>' +
+            '<td>' + item.statusAtual + '</td>' +
+            '<td><span class="nivel-agua-badge ' + nivelClass + '">' +
+              item.ultimoNivelAgua + '</span></td>' +
+          '</tr>';
+      }
+
       html += '</tbody></table></div>';
       document.getElementById('modalBody').innerHTML = html;
     }
-    
+
     // ==================== INICIALIZAÇÃO ====================
-    
-    // Carregar dados ao iniciar
+
     window.addEventListener('load', function() {
       carregarDados();
-      
-      // Atualizar automaticamente a cada 30 segundos
+
+      // Atualizar a cada 30 segundos
       intervaloAtualizacao = setInterval(carregarDados, 30000);
     });
-    
-    // Limpar intervalo ao sair
+
     window.addEventListener('beforeunload', function() {
       if (intervaloAtualizacao) {
         clearInterval(intervaloAtualizacao);

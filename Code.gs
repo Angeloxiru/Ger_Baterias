@@ -450,22 +450,27 @@ function calcularDuracao(dataInicio, dataFim) {
 // ==================== MÓDULO: DADOS PARA PAINEL ====================
 
 /**
- * Retorna todos os dados para o painel de controle
+ * Retorna todos os dados para o painel de controle (chamada única agregada)
  */
 function obterDadosPainel() {
   try {
     var abas = getAbas();
     var agora = new Date();
-    
+
     // Atualizar tempos decorridos
     atualizarTemposDecorridos();
-    
+
+    // Ler todas as planilhas UMA VEZ para otimizar performance
     var bateriasData = abas.baterias.getDataRange().getValues();
+    var registrosData = abas.registros.getDataRange().getValues();
+    var equipamentosData = abas.equipamentos.getDataRange().getValues();
+    var configData = abas.config.getDataRange().getValues();
+
+    // Processar baterias
     var baterias = [];
-    
     for (var i = 1; i < bateriasData.length; i++) {
       var tempoDecorrido = calcularDuracao(bateriasData[i][3], agora);
-      
+
       baterias.push({
         codigo: bateriasData[i][0],
         status: bateriasData[i][1],
@@ -477,14 +482,63 @@ function obterDadosPainel() {
         horimetroInstalacao: bateriasData[i][8] !== undefined ? bateriasData[i][8] : ''
       });
     }
-    
+
+    // Processar novas seções
+    var equipamentos = obterDadosEquipamentos(equipamentosData, registrosData);
+    var equipe = obterDadosEquipe(configData, registrosData);
+    var atividadeRecente = obterAtividadeRecente(registrosData);
+
+    // Calcular alertas
+    var aguaCritica = [];
+    var cargaExcessiva = [];
+    for (var j = 0; j < baterias.length; j++) {
+      if (baterias[j].nivelAgua === 'CRÍTICO') {
+        aguaCritica.push(baterias[j]);
+      }
+      if (baterias[j].status === 'Em Carga' && parseFloat(baterias[j].tempoDecorrido) > 12) {
+        cargaExcessiva.push(baterias[j]);
+      }
+    }
+
+    // Calcular estatísticas extras
+    var alertasAgua = 0;
+    for (var k = 0; k < baterias.length; k++) {
+      if (baterias[k].nivelAgua === 'ATENÇÃO' || baterias[k].nivelAgua === 'CRÍTICO') {
+        alertasAgua++;
+      }
+    }
+
+    var trocasSemana = 0;
+    for (var m = 0; m < equipe.length; m++) {
+      trocasSemana += equipe[m].trocasSemana;
+    }
+
+    var empilhadeirasAtivas = 0;
+    for (var n = 0; n < equipamentos.length; n++) {
+      if (equipamentos[n].bateriaAtual && equipamentos[n].bateriaAtual !== '') {
+        empilhadeirasAtivas++;
+      }
+    }
+
     return {
       sucesso: true,
       baterias: baterias,
       tempoCargaCompleta: CONFIG.TEMPO_CARGA_HORAS,
-      tempoAlertaAmarelo: CONFIG.TEMPO_ALERTA_AMARELO
+      tempoAlertaAmarelo: CONFIG.TEMPO_ALERTA_AMARELO,
+      equipamentos: equipamentos,
+      equipe: equipe,
+      atividadeRecente: atividadeRecente,
+      alertas: {
+        aguaCritica: aguaCritica,
+        cargaExcessiva: cargaExcessiva
+      },
+      estatisticasExtras: {
+        alertasAgua: alertasAgua,
+        trocasSemana: trocasSemana,
+        empilhadeirasAtivas: empilhadeirasAtivas
+      }
     };
-    
+
   } catch (error) {
     Logger.log('Erro ao obter dados do painel: ' + error.toString());
     return {
@@ -492,6 +546,134 @@ function obterDadosPainel() {
       erro: error.toString()
     };
   }
+}
+
+/**
+ * Obtém dados das empilhadeiras com último operador
+ */
+function obterDadosEquipamentos(equipamentosData, registrosData) {
+  var resultado = [];
+  var tz = Session.getScriptTimeZone();
+
+  for (var i = 1; i < equipamentosData.length; i++) {
+    var codigo = equipamentosData[i][0];
+    var ultimoOperador = '';
+
+    // Buscar último operador no Registros (de trás para frente)
+    for (var j = registrosData.length - 1; j >= 1; j--) {
+      if (registrosData[j][3] === codigo) {
+        ultimoOperador = registrosData[j][2];
+        break;
+      }
+    }
+
+    var ultimaTroca = '';
+    if (equipamentosData[i][2] && equipamentosData[i][2] !== '') {
+      try {
+        ultimaTroca = Utilities.formatDate(new Date(equipamentosData[i][2]), tz, 'dd/MM HH:mm');
+      } catch (e) {
+        ultimaTroca = String(equipamentosData[i][2]);
+      }
+    }
+
+    resultado.push({
+      codigo: codigo,
+      bateriaAtual: equipamentosData[i][1] !== undefined ? String(equipamentosData[i][1]) : '',
+      ultimaTroca: ultimaTroca,
+      ultimoHorimetro: equipamentosData[i][3] !== undefined && equipamentosData[i][3] !== '' ? equipamentosData[i][3] : '',
+      ultimoOperador: ultimoOperador
+    });
+  }
+
+  return resultado;
+}
+
+/**
+ * Obtém dados da equipe com contagem semanal
+ */
+function obterDadosEquipe(configData, registrosData) {
+  var resultado = [];
+  var tz = Session.getScriptTimeZone();
+
+  // Calcular início da semana (segunda-feira 00:00)
+  var agora = new Date();
+  var inicioSemana = new Date(agora);
+  var diaSemana = inicioSemana.getDay(); // 0=dom, 1=seg, ...
+  var diasParaSegunda = diaSemana === 0 ? 6 : diaSemana - 1;
+  inicioSemana.setDate(inicioSemana.getDate() - diasParaSegunda);
+  inicioSemana.setHours(0, 0, 0, 0);
+
+  // Ler funcionários da aba Configurações (a partir da linha 7, índice 6)
+  for (var i = 6; i < configData.length; i++) {
+    if (!configData[i][0] || configData[i][0] === '') break;
+
+    var codigoFunc = configData[i][0];
+    var nomeFunc = configData[i][1];
+    var trocasSemana = 0;
+    var trocasTotal = 0;
+    var ultimaAtividade = '';
+
+    for (var j = registrosData.length - 1; j >= 1; j--) {
+      if (registrosData[j][2] === codigoFunc) {
+        trocasTotal++;
+
+        var dataRegistro = new Date(registrosData[j][1]);
+        if (dataRegistro >= inicioSemana) {
+          trocasSemana++;
+        }
+
+        if (ultimaAtividade === '') {
+          try {
+            ultimaAtividade = Utilities.formatDate(dataRegistro, tz, 'dd/MM HH:mm');
+          } catch (e) {
+            ultimaAtividade = String(registrosData[j][1]);
+          }
+        }
+      }
+    }
+
+    resultado.push({
+      codigo: codigoFunc,
+      nome: nomeFunc,
+      trocasSemana: trocasSemana,
+      trocasTotal: trocasTotal,
+      ultimaAtividade: ultimaAtividade
+    });
+  }
+
+  return resultado;
+}
+
+/**
+ * Obtém os últimos 10 registros de atividade
+ */
+function obterAtividadeRecente(registrosData) {
+  var resultado = [];
+  var tz = Session.getScriptTimeZone();
+
+  var inicio = Math.max(1, registrosData.length - 10);
+
+  for (var i = registrosData.length - 1; i >= inicio; i--) {
+    var dataFormatada = '';
+    try {
+      dataFormatada = Utilities.formatDate(new Date(registrosData[i][1]), tz, 'dd/MM HH:mm');
+    } catch (e) {
+      dataFormatada = String(registrosData[i][1]);
+    }
+
+    resultado.push({
+      dataHora: dataFormatada,
+      funcionario: registrosData[i][2],
+      empilhadeira: registrosData[i][3],
+      bateriaInstalada: registrosData[i][4],
+      bateriaRemovida: registrosData[i][5],
+      nivelAgua: registrosData[i][6],
+      duracao: registrosData[i][7] ? parseFloat(registrosData[i][7]).toFixed(2) : 'N/A',
+      horimetro: registrosData[i][8] !== undefined && registrosData[i][8] !== '' ? registrosData[i][8] : 'N/A'
+    });
+  }
+
+  return resultado;
 }
 
 /**
