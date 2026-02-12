@@ -454,6 +454,21 @@
       color: #6c757d;
     }
 
+    .equip-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+
+    .equip-info-grid .info-linha {
+      padding: 6px 4px;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .equip-info-grid .info-linha:nth-last-child(-n+2) {
+      border-bottom: none;
+    }
+
     /* ==================== CARDS DE EQUIPE ==================== */
 
     .equipe-card {
@@ -1083,13 +1098,13 @@
                   (ativa ? 'Ativa' : 'Parada') +
                 '</span>' +
               '</div>' +
-              '<div class="bateria-info">' +
+              '<div class="equip-info-grid">' +
                 '<div class="info-linha">' +
                   '<span class="info-label">Bateria:</span>' +
                   '<span class="info-valor">' + (ativa ? equip.bateriaAtual : '---') + '</span>' +
                 '</div>' +
                 '<div class="info-linha">' +
-                  '<span class="info-label">Ultima troca:</span>' +
+                  '<span class="info-label">Ult. troca:</span>' +
                   '<span class="info-valor">' + (equip.ultimaTroca || '---') + '</span>' +
                 '</div>' +
                 '<div class="info-linha">' +
@@ -1099,6 +1114,14 @@
                 '<div class="info-linha">' +
                   '<span class="info-label">Operador:</span>' +
                   '<span class="info-valor">' + nomeOperador + '</span>' +
+                '</div>' +
+                '<div class="info-linha">' +
+                  '<span class="info-label">Bat. 7 dias:</span>' +
+                  '<span class="info-valor">' + (equip.baterias7d || 0) + '</span>' +
+                '</div>' +
+                '<div class="info-linha">' +
+                  '<span class="info-label">Bat. 30 dias:</span>' +
+                  '<span class="info-valor">' + (equip.baterias30d || 0) + '</span>' +
                 '</div>' +
               '</div>' +
             '</div>';
