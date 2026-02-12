@@ -122,7 +122,7 @@
           if (resultado.ultimoHorimetro !== '' && resultado.ultimoHorimetro !== undefined && resultado.ultimoHorimetro !== null) {
             ultimoHorimetro = parseFloat(resultado.ultimoHorimetro);
             document.getElementById('horimetroInfo').innerHTML =
-              'Último: ' + ultimoHorimetro + 'h  |  Máximo: ' + (ultimoHorimetro + 20) + 'h';
+              'Último: ' + ultimoHorimetro + 'h  |  Máximo: ' + (ultimoHorimetro + 30) + 'h';
             document.getElementById('horimetroInfo').className = 'info-display';
           } else {
             ultimoHorimetro = null;
@@ -168,18 +168,18 @@
 
     // Validar contra último horimetro registrado
     if (ultimoHorimetro !== null) {
-      if (numero <= ultimoHorimetro) {
+      if (numero < ultimoHorimetro) {
         document.getElementById('horimetroInfo').innerHTML =
-          '✕ Deve ser maior que ' + ultimoHorimetro + 'h';
+          '✕ Deve ser maior ou igual a ' + ultimoHorimetro + 'h';
         document.getElementById('horimetroInfo').className = 'info-display erro';
-        mostrarMensagem('Horimetro deve ser maior que ' + ultimoHorimetro + 'h', 'erro');
+        mostrarMensagem('Horimetro deve ser maior ou igual a ' + ultimoHorimetro + 'h', 'erro');
         return;
       }
-      if (numero > ultimoHorimetro + 20) {
+      if (numero > ultimoHorimetro + 30) {
         document.getElementById('horimetroInfo').innerHTML =
-          '✕ Máximo permitido: ' + (ultimoHorimetro + 20) + 'h';
+          '✕ Máximo permitido: ' + (ultimoHorimetro + 30) + 'h';
         document.getElementById('horimetroInfo').className = 'info-display erro';
-        mostrarMensagem('Diferença máxima é 20h (último: ' + ultimoHorimetro + 'h, máximo: ' + (ultimoHorimetro + 20) + 'h)', 'erro');
+        mostrarMensagem('Diferença máxima é 30h (último: ' + ultimoHorimetro + 'h, máximo: ' + (ultimoHorimetro + 30) + 'h)', 'erro');
         return;
       }
     }

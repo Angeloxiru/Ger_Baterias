@@ -286,11 +286,11 @@ function registrarTroca(dados) {
       if (equipValidData[i][0] === dados.empilhadeira) {
         if (equipValidData[i][3] !== '' && equipValidData[i][3] !== undefined) {
           var ultimoHor = parseFloat(equipValidData[i][3]);
-          if (parseFloat(dados.horimetro) <= ultimoHor) {
-            return { sucesso: false, mensagem: 'Horimetro deve ser maior que ' + ultimoHor + 'h' };
+          if (parseFloat(dados.horimetro) < ultimoHor) {
+            return { sucesso: false, mensagem: 'Horimetro deve ser maior ou igual a ' + ultimoHor + 'h' };
           }
-          if (parseFloat(dados.horimetro) > ultimoHor + 20) {
-            return { sucesso: false, mensagem: 'Diferença máxima é 20h (último: ' + ultimoHor + 'h)' };
+          if (parseFloat(dados.horimetro) > ultimoHor + 30) {
+            return { sucesso: false, mensagem: 'Diferença máxima é 30h (último: ' + ultimoHor + 'h)' };
           }
         }
         break;
