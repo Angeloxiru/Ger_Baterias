@@ -550,16 +550,46 @@ function obterDadosEquipamentos(equipamentosData, registrosData, configData) {
   var resultado = [];
   var tz = Session.getScriptTimeZone();
 
+  // Calcular datas limite uma vez só
+  var agora = new Date();
+  var limite7d = new Date(agora);
+  limite7d.setDate(limite7d.getDate() - 7);
+  limite7d.setHours(0, 0, 0, 0);
+  var limite30d = new Date(agora);
+  limite30d.setDate(limite30d.getDate() - 30);
+  limite30d.setHours(0, 0, 0, 0);
+
   for (var i = 1; i < equipamentosData.length; i++) {
     var codigo = equipamentosData[i][0];
     var ultimoOperador = '';
+    var baterias7d = {};
+    var baterias30d = {};
 
-    // Buscar último operador no Registros (de trás para frente)
+    // Buscar último operador e contar baterias únicas 7d/30d
     for (var j = registrosData.length - 1; j >= 1; j--) {
       if (registrosData[j][3] === codigo) {
-        ultimoOperador = registrosData[j][2];
-        break;
+        if (ultimoOperador === '') {
+          ultimoOperador = registrosData[j][2];
+        }
+        var dataReg = new Date(registrosData[j][1]);
+        var batCode = registrosData[j][4];
+        if (dataReg >= limite30d && batCode) {
+          baterias30d[batCode] = true;
+          if (dataReg >= limite7d) {
+            baterias7d[batCode] = true;
+          }
+        }
       }
+    }
+
+    // Contar chaves únicas
+    var count7d = 0;
+    for (var key7 in baterias7d) {
+      if (baterias7d.hasOwnProperty(key7)) count7d++;
+    }
+    var count30d = 0;
+    for (var key30 in baterias30d) {
+      if (baterias30d.hasOwnProperty(key30)) count30d++;
     }
 
     // Buscar nome do operador na aba Configurações
@@ -588,7 +618,9 @@ function obterDadosEquipamentos(equipamentosData, registrosData, configData) {
       ultimaTroca: ultimaTroca,
       ultimoHorimetro: equipamentosData[i][3] !== undefined && equipamentosData[i][3] !== '' ? equipamentosData[i][3] : '',
       ultimoOperador: ultimoOperador,
-      ultimoOperadorNome: ultimoOperadorNome
+      ultimoOperadorNome: ultimoOperadorNome,
+      baterias7d: count7d,
+      baterias30d: count30d
     });
   }
 
