@@ -1086,10 +1086,6 @@
           var equip = equipamentos[i];
           var ativa = equip.bateriaAtual && equip.bateriaAtual !== '';
 
-          var nomeOperador = equip.ultimoOperadorNome ?
-            equip.ultimoOperador + ' - ' + equip.ultimoOperadorNome :
-            (equip.ultimoOperador || '---');
-
           html +=
             '<div class="equip-card">' +
               '<div class="equip-header">' +
@@ -1112,8 +1108,8 @@
                   '<span class="info-valor">' + (equip.ultimoHorimetro ? equip.ultimoHorimetro + 'h' : '---') + '</span>' +
                 '</div>' +
                 '<div class="info-linha">' +
-                  '<span class="info-label">Operador:</span>' +
-                  '<span class="info-valor">' + nomeOperador + '</span>' +
+                  '<span class="info-label">Dur. Media:</span>' +
+                  '<span class="info-valor">' + (equip.mediaDuracao || '0') + 'h</span>' +
                 '</div>' +
                 '<div class="info-linha">' +
                   '<span class="info-label">Bat. 7 dias:</span>' +
@@ -1185,7 +1181,8 @@
             '<div class="timeline-item">' +
               '<div class="timeline-hora">' + item.dataHora + '</div>' +
               '<div class="timeline-resumo">' +
-                item.funcionario + ' trocou em ' + item.empilhadeira +
+                (item.funcionarioNome ? item.funcionario + ' - ' + item.funcionarioNome : item.funcionario) +
+                ' trocou em ' + item.empilhadeira +
               '</div>' +
               '<div class="timeline-detalhe">' +
                 'Instalou: ' + item.bateriaInstalada +

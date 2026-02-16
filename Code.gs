@@ -486,7 +486,7 @@ function obterDadosPainel() {
     // Processar novas seções
     var equipamentos = obterDadosEquipamentos(equipamentosData, registrosData, configData);
     var equipe = obterDadosEquipe(configData, registrosData);
-    var atividadeRecente = obterAtividadeRecente(registrosData);
+    var atividadeRecente = obterAtividadeRecente(registrosData, configData);
 
     // Calcular alertas (apenas água crítica)
     var aguaCritica = [];
@@ -561,16 +561,14 @@ function obterDadosEquipamentos(equipamentosData, registrosData, configData) {
 
   for (var i = 1; i < equipamentosData.length; i++) {
     var codigo = equipamentosData[i][0];
-    var ultimoOperador = '';
     var baterias7d = {};
     var baterias30d = {};
+    var somaDuracao = 0;
+    var countDuracao = 0;
 
-    // Buscar último operador e contar baterias únicas 7d/30d
+    // Contar baterias únicas 7d/30d e calcular duração média
     for (var j = registrosData.length - 1; j >= 1; j--) {
       if (registrosData[j][3] === codigo) {
-        if (ultimoOperador === '') {
-          ultimoOperador = registrosData[j][2];
-        }
         var dataReg = new Date(registrosData[j][1]);
         var batCode = registrosData[j][4];
         if (dataReg >= limite30d && batCode) {
@@ -578,6 +576,12 @@ function obterDadosEquipamentos(equipamentosData, registrosData, configData) {
           if (dataReg >= limite7d) {
             baterias7d[batCode] = true;
           }
+        }
+        // Somar duração de uso (coluna 7) para calcular média
+        var duracao = parseFloat(registrosData[j][7]);
+        if (!isNaN(duracao) && duracao > 0) {
+          somaDuracao += duracao;
+          countDuracao++;
         }
       }
     }
@@ -592,16 +596,7 @@ function obterDadosEquipamentos(equipamentosData, registrosData, configData) {
       if (baterias30d.hasOwnProperty(key30)) count30d++;
     }
 
-    // Buscar nome do operador na aba Configurações
-    var ultimoOperadorNome = '';
-    if (ultimoOperador) {
-      for (var k = 6; k < configData.length; k++) {
-        if (configData[k][0] === ultimoOperador) {
-          ultimoOperadorNome = configData[k][1];
-          break;
-        }
-      }
-    }
+    var mediaDuracaoEquip = countDuracao > 0 ? (somaDuracao / countDuracao).toFixed(1) : '0';
 
     var ultimaTroca = '';
     if (equipamentosData[i][2] && equipamentosData[i][2] !== '') {
@@ -617,8 +612,7 @@ function obterDadosEquipamentos(equipamentosData, registrosData, configData) {
       bateriaAtual: equipamentosData[i][1] !== undefined ? String(equipamentosData[i][1]) : '',
       ultimaTroca: ultimaTroca,
       ultimoHorimetro: equipamentosData[i][3] !== undefined && equipamentosData[i][3] !== '' ? equipamentosData[i][3] : '',
-      ultimoOperador: ultimoOperador,
-      ultimoOperadorNome: ultimoOperadorNome,
+      mediaDuracao: mediaDuracaoEquip,
       baterias7d: count7d,
       baterias30d: count30d
     });
@@ -694,9 +688,16 @@ function obterDadosEquipe(configData, registrosData) {
 /**
  * Obtém os últimos 10 registros de atividade
  */
-function obterAtividadeRecente(registrosData) {
+function obterAtividadeRecente(registrosData, configData) {
   var resultado = [];
   var tz = Session.getScriptTimeZone();
+
+  // Montar mapa de nomes dos funcionários
+  var nomesFuncionarios = {};
+  for (var f = 6; f < configData.length; f++) {
+    if (!configData[f][0] || configData[f][0] === '') break;
+    nomesFuncionarios[configData[f][0]] = configData[f][1];
+  }
 
   var inicio = Math.max(1, registrosData.length - 10);
 
@@ -708,9 +709,13 @@ function obterAtividadeRecente(registrosData) {
       dataFormatada = String(registrosData[i][1]);
     }
 
+    var codigoFunc = registrosData[i][2];
+    var nomeFunc = nomesFuncionarios[codigoFunc] || '';
+
     resultado.push({
       dataHora: dataFormatada,
-      funcionario: registrosData[i][2],
+      funcionario: codigoFunc,
+      funcionarioNome: nomeFunc,
       empilhadeira: registrosData[i][3],
       bateriaInstalada: registrosData[i][4],
       bateriaRemovida: registrosData[i][5],
