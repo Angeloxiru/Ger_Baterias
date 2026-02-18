@@ -122,11 +122,12 @@
           if (resultado.ultimoHorimetro !== '' && resultado.ultimoHorimetro !== undefined && resultado.ultimoHorimetro !== null) {
             ultimoHorimetro = parseFloat(resultado.ultimoHorimetro);
             document.getElementById('horimetroInfo').innerHTML =
-              'Último: ' + ultimoHorimetro + 'h  |  Máximo: ' + (ultimoHorimetro + 30) + 'h';
+              'Verifique o Horimetro da Empilhadeira!';
             document.getElementById('horimetroInfo').className = 'info-display';
           } else {
             ultimoHorimetro = null;
-            document.getElementById('horimetroInfo').innerHTML = '';
+            document.getElementById('horimetroInfo').innerHTML =
+              'Verifique o Horimetro da Empilhadeira!';
             document.getElementById('horimetroInfo').className = 'info-display';
           }
 
