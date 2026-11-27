@@ -69,6 +69,7 @@ battery-management/
 ├── styles.html            # Estilos CSS da interface
 ├── script.html            # JavaScript da interface
 ├── painel.html            # Painel de controle
+├── Banco.gs               # Envio das trocas ao banco do app Tarefas (Turso)
 └── README.md              # Esta documentação
 ```
 
@@ -128,6 +129,35 @@ battery-management/
 5. **IMPORTANTE:** Copie a URL gerada (você vai precisar!)
 
 ---
+
+## 🔗 Integração com o app Tarefas (banco Turso)
+
+Desde novembro/2026 cada troca registrada aqui também vai para o banco do app **Ger_Tarefas**,
+onde soma **15 minutos** ao tempo trabalhado do funcionário (bonificação N1) e aparece no
+Histórico e no Raio X do gestor. **O registro pelo QR code não muda.**
+
+Como funciona (`Banco.gs`):
+- Depois de gravar a troca na aba **Registros**, o script envia uma cópia ao banco.
+- Se o envio falhar (internet, banco fora do ar), a troca **continua registrada na planilha** e o
+  funcionário não percebe nada.
+- A coluna **J "Enviado ao banco"** da aba Registros mostra quando cada troca foi enviada. Vazia = pendente.
+- A rotina `sincronizarBanco()` roda a cada **15 minutos**: envia as trocas pendentes e copia as
+  abas Equipamentos e Baterias. Na primeira execução envia **todo o histórico**.
+- Enviar a mesma troca de novo não duplica (chave = data/hora + empilhadeira).
+- Os códigos de funcionário são os mesmos crachás do app Tarefas (ex.: PL33).
+
+### Configurar (uma vez)
+1. No editor do Apps Script, crie o arquivo **Banco.gs** (Arquivo > + > Script) e cole o conteúdo
+   deste repositório. Atualize também o **Code.gs**.
+2. **Configurações do projeto** (engrenagem) > **Propriedades do script** > adicionar:
+   - `TURSO_URL` = `libsql://tarefas-angeloxiru.aws-us-east-1.turso.io`
+   - `TURSO_TOKEN` = o token do banco (o mesmo `TURSO_TOKEN` do `js/config.js` do Ger_Tarefas)
+3. Selecione a função **`testarConexaoBanco`** e clique em Executar. Autorize o acesso a
+   "serviço externo" quando pedido. O registro de execução deve mostrar "Conexão com o banco OK.".
+4. Selecione **`configurarSincronizacao`** e Execute. Ela cria a coluna J, o gatilho de 15 min e
+   já envia todo o histórico (pode levar alguns minutos; se não terminar, a próxima execução continua).
+5. **Implantar > Gerenciar implantações > Editar > Nova versão**, na **mesma** implantação (a URL do
+   QR code não muda).
 
 ## ⚙️ Configuração
 
@@ -289,6 +319,12 @@ Quando fizer nova implantação:
 ---
 
 ## 🐛 Troubleshooting
+
+### Problema: trocas não aparecem no app Tarefas
+1. Veja a coluna J da aba Registros: vazia = ainda não enviada.
+2. Execute `testarConexaoBanco` e leia o registro de execução.
+3. Confira as Propriedades do script (`TURSO_URL`, `TURSO_TOKEN`) e se o gatilho `sincronizarBanco`
+   existe em Acionadores (relógio). Se não existir, execute `configurarSincronizacao` de novo.
 
 ### Problema: "Funcionário não cadastrado"
 
