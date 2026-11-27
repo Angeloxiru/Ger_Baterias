@@ -85,7 +85,8 @@ function criarAbaRegistros(ss) {
     'Bateria Removida',
     'Nível Água',
     'Duração Uso Anterior (horas)',
-    'Horimetro'
+    'Horimetro',
+    'Enviado ao banco'        // preenchida por Banco.gs quando a troca chega ao banco do app Tarefas
   ];
   
   sheet.getRange(1, 1, 1, cabecalhos.length).setValues([cabecalhos]);
@@ -344,6 +345,10 @@ function registrarTroca(dados) {
 
     // 7. Atualizar registro da empilhadeira com horimetro atual
     atualizarEmpilhadeira(dados.empilhadeira, dados.bateriaNova, agora, dados.horimetro);
+
+    // 8. Enviar copia ao banco do app Tarefas (Banco.gs). Se falhar, a troca continua
+    //    registrada e a rotina sincronizarBanco() reenvia depois.
+    enviarTrocaParaBanco(abas.registros.getLastRow());
 
     return {
       sucesso: true,
